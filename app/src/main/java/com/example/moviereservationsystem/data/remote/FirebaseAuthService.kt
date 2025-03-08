@@ -13,7 +13,7 @@ import javax.inject.Inject
 
 class FirebaseAuthService @Inject constructor(private val auth: FirebaseAuth){
 
-    suspend fun logInWithEmailAndPassword(email: String, password: String) : Result<AuthResult> {
+    suspend fun logInUser(email: String, password: String) : Result<AuthResult> {
         return withContext(Dispatchers.IO) {
             try {
                 val result = auth.signInWithEmailAndPassword(email, password).await()
@@ -23,5 +23,17 @@ class FirebaseAuthService @Inject constructor(private val auth: FirebaseAuth){
             }
         }
     }
+
+    suspend fun signUpUser(email: String, password: String) : Result<AuthResult> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val result = auth.createUserWithEmailAndPassword(email, password).await()
+                Result.success(result)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
 
 }

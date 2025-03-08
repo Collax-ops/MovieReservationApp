@@ -1,11 +1,14 @@
 package com.example.moviereservationsystem.ui.signup
 
+import android.provider.ContactsContract.CommonDataKinds.Email
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -17,6 +20,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -26,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.moviereservationsystem.ui.login.LogInButton
 import com.example.moviereservationsystem.ui.theme.MovieReservationSystemTheme
 import com.example.moviereservationsystem.ui.theme.onPrimaryContainerLight
 import com.example.moviereservationsystem.ui.theme.outlineVariantLightMediumContrast
@@ -34,19 +39,22 @@ import com.example.moviereservationsystem.ui.theme.primaryLight
 import com.example.moviereservationsystem.ui.theme.tertiaryLight
 
 @Composable
-fun SignUpScreen(){
+fun SignUpScreen(signUpViewModel: SignUpViewModel){
     Box(
         Modifier
             .fillMaxSize()
             .padding(16.dp)
             .background(MaterialTheme.colorScheme.background)
     ) {
-        SignUp(Modifier.align(Alignment.Center))
+        SignUp(Modifier.align(Alignment.Center),signUpViewModel)
     }
 }
 
 @Composable
-fun SignUp(modifier: Modifier){
+fun SignUp(modifier: Modifier,signUpViewModel: SignUpViewModel){
+
+    val signUpUiState by signUpViewModel.uiState.collectAsState()
+
     Column (modifier = modifier){
         Text(
             text = "Sign Up",
@@ -55,15 +63,26 @@ fun SignUp(modifier: Modifier){
             modifier = modifier
         )
         Spacer(modifier = Modifier.padding(16.dp))
-        NameField()
+        NameField(
+            name = signUpUiState.name,
+            onTextFieldChange = {signUpViewModel.updateName(it)}
+        )
         Spacer(modifier = Modifier.padding(16.dp))
-        MobileNumberField()
+        EmailField(
+            email = signUpUiState.email,
+            onTextFieldChange = {signUpViewModel.updateEmail(it)}
+        )
         Spacer(modifier = Modifier.padding(16.dp))
-        EmailField()
+        PasswordField(
+            password = signUpUiState.password,
+            onTextFieldChange = { signUpViewModel.updatePassword(it) }
+        )
         Spacer(modifier = Modifier.padding(16.dp))
-        PasswordField()
-        Spacer(modifier = Modifier.padding(16.dp))
-        SignUpButton {  }
+        SignUpButton(
+            isSignUpEnabled = signUpUiState.isSignUpEnabled,
+            isLoading = signUpUiState.isLoading,
+            onClick = { signUpViewModel.signUp() }
+        )
         Spacer(modifier = Modifier.padding(8.dp))
         LogInRedirection()
     }
@@ -72,17 +91,15 @@ fun SignUp(modifier: Modifier){
 
 
 @Composable
-fun NameField(){
-    var text by remember { mutableStateOf("") }
+fun NameField(name: String, onTextFieldChange: (String) -> Unit){
+
 
     OutlinedTextField(
-        value = text,
-        onValueChange = {text = it},
+        value = name,
+        onValueChange = {onTextFieldChange(it)},
         label = {Text(text = "Enter your Name")},
-        modifier = Modifier.size(
-            width = 272.dp,
-            height = 40.dp
-        ),
+        modifier = Modifier
+            .fillMaxWidth(),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
         singleLine = true,
         maxLines = 1,
@@ -95,40 +112,14 @@ fun NameField(){
 }
 
 @Composable
-fun MobileNumberField(){
-    var text by remember { mutableStateOf("") }
+fun EmailField(email: String, onTextFieldChange: (String) -> Unit){
 
     OutlinedTextField(
-        value = text,
-        onValueChange = {text = it},
-        label = {Text(text = "Enter your Number")},
-        modifier = Modifier.size(
-            width = 272.dp,
-            height = 40.dp
-        ),
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-        singleLine = true,
-        maxLines = 1,
-        colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = onPrimaryContainerLight,
-            focusedLabelColor = onPrimaryContainerLight
-
-        )
-    )
-}
-
-@Composable
-fun EmailField(){
-    var text by remember { mutableStateOf("") }
-
-    OutlinedTextField(
-        value = text,
-        onValueChange = {text = it},
+        value = email,
+        onValueChange = {onTextFieldChange(it)},
         label = {Text(text = "Enter your Email")},
-        modifier = Modifier.size(
-            width = 272.dp,
-            height = 40.dp
-        ),
+        modifier = Modifier
+            .fillMaxWidth(),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
         singleLine = true,
         maxLines = 1,
@@ -141,17 +132,14 @@ fun EmailField(){
 }
 
 @Composable
-fun PasswordField(){
-    var text by remember { mutableStateOf("") }
+fun PasswordField(password:String, onTextFieldChange: (String) -> Unit){
 
     OutlinedTextField(
-        value = text,
-        onValueChange = {text = it},
+        value = password,
+        onValueChange = {onTextFieldChange(it)},
         label = {Text(text = "Enter your Password")},
-        modifier = Modifier.size(
-            width = 272.dp,
-            height = 40.dp
-        ),
+        modifier = Modifier
+            .fillMaxWidth(),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
         singleLine = true,
         maxLines = 1,
@@ -163,13 +151,13 @@ fun PasswordField(){
 }
 
 @Composable
-fun SignUpButton(onClick: () -> Unit){
+fun SignUpButton(isSignUpEnabled:Boolean,isLoading:Boolean,onClick: () -> Unit){
     Button(
-        onClick = {onClick()},
-        modifier = Modifier.size(
-            width = 272.dp,
-            height = 40.dp
-        ),
+        onClick = {
+            Log.d("SignUpButton", "Botón SignUp presionado")
+            onClick()},
+        modifier = Modifier
+            .fillMaxWidth(),
         shape = RoundedCornerShape(8.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = primaryContainerLight,
@@ -209,6 +197,6 @@ fun LogInRedirection(){
 @Composable
 fun SignUpScreenPreview() {
     MovieReservationSystemTheme {
-        SignUpScreen()
+
     }
 }

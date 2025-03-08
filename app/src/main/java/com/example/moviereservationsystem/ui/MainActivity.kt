@@ -8,6 +8,8 @@ import androidx.activity.viewModels
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.moviereservationsystem.ui.login.LoginScreen
 import com.example.moviereservationsystem.ui.login.LoginViewModel
+import com.example.moviereservationsystem.ui.signup.SignUpScreen
+import com.example.moviereservationsystem.ui.signup.SignUpViewModel
 import com.example.moviereservationsystem.ui.theme.MovieReservationSystemTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -15,12 +17,13 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     private val loginViewModel: LoginViewModel by viewModels()
+    private val signUpViewModel : SignUpViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            LoginScreen(loginViewModel = loginViewModel)
+           SignUpScreen(signUpViewModel = signUpViewModel)
         }
     }
 }

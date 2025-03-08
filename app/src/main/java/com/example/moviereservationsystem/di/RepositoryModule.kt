@@ -1,7 +1,9 @@
 package com.example.moviereservationsystem.di
 
 import com.example.moviereservationsystem.data.repository.AuthRepositoryImpl
+import com.example.moviereservationsystem.data.repository.UserRepositoryImpl
 import com.example.moviereservationsystem.domain.repository.AuthRepository
+import com.example.moviereservationsystem.domain.repository.UserRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -17,5 +19,11 @@ abstract class RepositoryModule{
     abstract fun bindAuthRepository(
         authRepositoryImpl: AuthRepositoryImpl
     ) : AuthRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindUserRepository(
+        userRepositoryImpl: UserRepositoryImpl
+    ) : UserRepository
 
 }

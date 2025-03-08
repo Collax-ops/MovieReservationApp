@@ -4,5 +4,7 @@ import com.google.firebase.auth.AuthResult
 
 interface AuthRepository {
 
-    suspend fun logInWithEmailAndPassword(email: String, password: String) : Result<AuthResult>
+    suspend fun logInUser(email: String, password: String) : Result<AuthResult>
+
+    suspend fun signUpUser(email: String, password: String) : Result<AuthResult>
 }

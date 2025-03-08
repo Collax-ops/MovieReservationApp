@@ -65,7 +65,7 @@ fun Login(modifier: Modifier,loginViewModel: LoginViewModel){
         Spacer(modifier = Modifier.padding(16.dp))
         EmailField(
             email = loginUiState.email,
-            onTextFieldChanged = { loginViewModel.updateEmail(inputEmail = it)}
+            onTextFieldChanged = { loginViewModel.updateEmail(it)}
         )
         Spacer(modifier = Modifier.padding(16.dp))
         PasswordField(
