@@ -78,5 +78,8 @@ dependencies {
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.auth)
 
+    //Kotlin-datetime
+    implementation(libs.kotlinx.datetime)
+
 }
 
