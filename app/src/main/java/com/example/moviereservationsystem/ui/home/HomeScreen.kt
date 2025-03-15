@@ -1,5 +1,7 @@
 package com.example.moviereservationsystem.ui.home
 
+import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -7,10 +9,18 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
@@ -23,15 +33,25 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.node.ModifierNodeElement
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import com.example.moviereservationsystem.R
 import com.example.moviereservationsystem.ui.theme.inversePrimaryLight
 import com.example.moviereservationsystem.ui.theme.tertiaryContainerLight
@@ -43,21 +63,28 @@ data class Genre(
 )
 
 
-@Preview(showBackground = true)
+
 @Composable
-fun HomeScreen(){
+fun HomeScreen(homeViewModel: HomeViewModel){
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ){
-        Home(modifier = Modifier.align(Alignment.Center))
+        Home(modifier = Modifier.align(Alignment.Center),homeViewModel)
     }
 }
 
 
 @Composable
-fun Home(modifier: Modifier){
+fun Home(modifier: Modifier, homeViewModel: HomeViewModel){
+
+    val homeUiState by homeViewModel.uiState.collectAsState()
+
+    LaunchedEffect(Unit) {
+        homeViewModel.getMoviesNowPlaying()
+    }
+
     Column(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.SpaceBetween
@@ -71,6 +98,8 @@ fun Home(modifier: Modifier){
         ) {
             GenresFilter()
         }
+        Spacer(modifier = Modifier.width(8.dp))
+        MovieGrid(homeUiState.isLoading, homeUiState.movieList)
         Spacer(modifier = Modifier.width(8.dp))
         NavigationBar()
     }
@@ -156,6 +185,51 @@ fun GenresFilter(){
         }
     }
 }
+
+
+
+@Composable
+fun MovieGrid(isLoading: Boolean, movieList: List<MovieUiModel>){
+    if (isLoading) {
+        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
+        }
+    } else {
+        LazyVerticalGrid(columns = GridCells.Fixed(3)) {
+            items(movieList, key = { it.title }) { movie ->
+                MovieCard(movie)
+            }
+        }
+    }
+}
+
+@Composable
+fun MovieCard(movieUiModel: MovieUiModel){
+    Card(
+    ) {
+        Column {
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data("https://image.tmdb.org/t/p/w500${movieUiModel.posterPath}")
+                    .crossfade(true)
+                    .build(),
+                contentDescription = "Movie_Poster",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .size(150.dp, 220.dp)
+                    .clip(RoundedCornerShape(16.dp)),
+                onError = { Log.e("Coil", "Error loading image: ${it.result.throwable}") },
+                onSuccess = { Log.d("Coil", "Image loaded successfully") }
+            )
+            Text(
+                modifier = Modifier.padding(top = 4.dp),
+                text = movieUiModel.title,
+                style = MaterialTheme.typography.titleMedium
+            )
+        }
+    }
+}
+
 
 @Composable
 fun NavigationBar(){
