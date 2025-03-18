@@ -1,7 +1,6 @@
 package com.example.moviereservationsystem.ui.home
 
 import android.util.Log
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -9,7 +8,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -17,9 +15,11 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
@@ -28,12 +28,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemColors
 import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -42,66 +41,65 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.node.ModifierNodeElement
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.example.moviereservationsystem.R
-import com.example.moviereservationsystem.ui.theme.inversePrimaryLight
+import com.example.moviereservationsystem.ui.home.model.GenreUiModel
+import com.example.moviereservationsystem.ui.home.model.MovieUiModel
+import com.example.moviereservationsystem.ui.theme.inversePrimaryDark
+import com.example.moviereservationsystem.ui.theme.onPrimaryContainerLight
+import com.example.moviereservationsystem.ui.theme.onPrimaryLight
 import com.example.moviereservationsystem.ui.theme.tertiaryContainerLight
 
 
-data class Genre(
-    val name: String,
-    val isSelected: Boolean = false
-)
-
-
-
 @Composable
-fun HomeScreen(homeViewModel: HomeViewModel){
+fun HomeScreen(homeViewModel: HomeViewModel) {
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
-    ){
-        Home(modifier = Modifier.align(Alignment.Center),homeViewModel)
+    ) {
+        Home(modifier = Modifier,homeViewModel)
     }
 }
 
-
 @Composable
-fun Home(modifier: Modifier, homeViewModel: HomeViewModel){
+fun Home(modifier: Modifier = Modifier, homeViewModel: HomeViewModel) {
 
     val homeUiState by homeViewModel.uiState.collectAsState()
 
-    LaunchedEffect(Unit) {
-        homeViewModel.getMoviesNowPlaying()
-    }
-
-    Column(
-        modifier = modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.SpaceBetween
-    ) {
-        TopBar()
-        Spacer(modifier = Modifier.width(8.dp))
+    Scaffold(
+        topBar = { TopBar() },
+        bottomBar = { NavigationBar() }
+    ) { paddingValues ->
         Column(
             modifier = Modifier
-                .weight(1f)
-                .padding(horizontal = 8.dp)
+                .fillMaxSize()
+                .padding(paddingValues)
         ) {
-            GenresFilter()
+            Spacer(modifier = Modifier.width(8.dp))
+            GenresFilter(
+                genres = homeUiState.genres,
+                selectedGenre = homeUiState.selectedGenre,
+                onGenreSelected = { genreId ->
+                    homeViewModel.updateSelectedGenre(genreId)
+                    homeViewModel.filterMoviesByGenre(genreId)
+                }
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            MovieGrid(
+                isLoading = homeUiState.isLoading,
+                movieList = homeUiState.filteredMovies
+            )
+            Spacer(modifier = Modifier.width(8.dp))
         }
-        Spacer(modifier = Modifier.width(8.dp))
-        MovieGrid(homeUiState.isLoading, homeUiState.movieList)
-        Spacer(modifier = Modifier.width(8.dp))
-        NavigationBar()
     }
 }
 
@@ -134,43 +132,26 @@ fun TopBar(){
 }
 
 @Composable
-fun GenresFilter(){
-    var genres by remember {
-        mutableStateOf(
-            listOf(
-                Genre("Action"),
-                Genre("Comedy"),
-                Genre("Drama"),
-                Genre("Horror"),
-                Genre("Sci-Fi"),
-                Genre("Thriller"),
-                Genre("Romance"),
-                Genre("Adventure"),
-                Genre("Animation"),
-                Genre("Crime"),
-                Genre("Mystery"),
-            )
-        )
-    }
-
-    LazyRow (
+fun GenresFilter(
+    genres: List<GenreUiModel>,
+    selectedGenre: Int,
+    onGenreSelected: (Int) -> Unit
+) {
+    LazyRow(
+        modifier = Modifier.padding(start = 16.dp, end = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(4.dp),
         userScrollEnabled = true
-    ){
-        items(genres.size){ index ->
-            val genre = genres[index]
+    ) {
+        items(genres) { genre ->
+            val isSelected = genre.id == selectedGenre
             FilterChip(
-                selected = genre.isSelected,
-                onClick = {
-                    genres = genres.mapIndexed { i, g ->
-                        if (i == index) g.copy(isSelected = !g.isSelected) else g
-                    }
-                },
+                selected = isSelected,
+                onClick = { onGenreSelected(genre.id) },
                 label = { Text(genre.name) },
                 colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = tertiaryContainerLight
+                    selectedContainerColor = tertiaryContainerLight
                 ),
-                leadingIcon = if (genre.isSelected) {
+                leadingIcon = if (isSelected) {
                     {
                         Icon(
                             painterResource(R.drawable.check_icon),
@@ -181,7 +162,6 @@ fun GenresFilter(){
                     null
                 }
             )
-            
         }
     }
 }
@@ -189,23 +169,29 @@ fun GenresFilter(){
 
 
 @Composable
-fun MovieGrid(isLoading: Boolean, movieList: List<MovieUiModel>){
-    if (isLoading) {
-        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+fun MovieGrid(isLoading: Boolean, movieList: List<MovieUiModel>) {
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        if (isLoading) {
             CircularProgressIndicator()
-        }
-    } else {
-        LazyVerticalGrid(columns = GridCells.Fixed(3)) {
-            items(movieList, key = { it.title }) { movie ->
-                MovieCard(movie)
+        } else {
+            LazyVerticalGrid(
+                columns = GridCells.Adaptive(minSize = 100.dp),
+                modifier = Modifier.padding(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                items(movieList, key = { it.title }) { movie ->
+                    MovieCard(movie)
+                }
             }
         }
     }
 }
 
 @Composable
-fun MovieCard(movieUiModel: MovieUiModel){
+fun MovieCard(movieUiModel: MovieUiModel) {
     Card(
+        colors = CardDefaults.cardColors(containerColor = onPrimaryLight)
     ) {
         Column {
             AsyncImage(
@@ -213,7 +199,7 @@ fun MovieCard(movieUiModel: MovieUiModel){
                     .data("https://image.tmdb.org/t/p/w500${movieUiModel.posterPath}")
                     .crossfade(true)
                     .build(),
-                contentDescription = "Movie_Poster",
+                contentDescription = "Movie Poster",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .size(150.dp, 220.dp)
@@ -222,9 +208,10 @@ fun MovieCard(movieUiModel: MovieUiModel){
                 onSuccess = { Log.d("Coil", "Image loaded successfully") }
             )
             Text(
-                modifier = Modifier.padding(top = 4.dp),
+                modifier = Modifier.padding(top = 4.dp, bottom = 8.dp),
                 text = movieUiModel.title,
-                style = MaterialTheme.typography.titleMedium
+                style = MaterialTheme.typography.titleMedium,
+                textAlign = TextAlign.Center
             )
         }
     }
@@ -232,15 +219,13 @@ fun MovieCard(movieUiModel: MovieUiModel){
 
 
 @Composable
-fun NavigationBar(){
+fun NavigationBar() {
+    var selectedIndex by remember { mutableStateOf(0) }
 
-    var selected by remember { mutableStateOf(false) }
-
-    BottomAppBar(
-    ) {
+    BottomAppBar(containerColor = onPrimaryLight) {
         NavigationBarItem(
-            selected = selected,
-            onClick = { selected = !selected },
+            selected = selectedIndex == 0,
+            onClick = { selectedIndex = 0 },
             icon = {
                 Icon(
                     painterResource(R.drawable.home_icon),
@@ -248,14 +233,15 @@ fun NavigationBar(){
                 )
             },
             colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = inversePrimaryLight,
-                selectedTextColor = inversePrimaryLight,
+                indicatorColor = Color.Transparent,
+                selectedIconColor = inversePrimaryDark,
+                unselectedIconColor = onPrimaryContainerLight
             )
         )
         Spacer(Modifier.width(8.dp))
         NavigationBarItem(
-            selected = selected,
-            onClick = { selected = !selected },
+            selected = selectedIndex == 1,
+            onClick = { selectedIndex = 1 },
             icon = {
                 Icon(
                     painterResource(R.drawable.booking_icon),
@@ -263,14 +249,15 @@ fun NavigationBar(){
                 )
             },
             colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = inversePrimaryLight,
-                selectedTextColor = inversePrimaryLight,
+                indicatorColor = Color.Transparent,
+                selectedIconColor = inversePrimaryDark,
+                unselectedIconColor = Color.Black
             )
         )
         Spacer(Modifier.width(8.dp))
         NavigationBarItem(
-            selected = selected,
-            onClick = { selected = !selected },
+            selected = selectedIndex == 2,
+            onClick = { selectedIndex = 2 },
             icon = {
                 Icon(
                     painterResource(R.drawable.history_icon),
@@ -278,8 +265,9 @@ fun NavigationBar(){
                 )
             },
             colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = inversePrimaryLight,
-                selectedTextColor = inversePrimaryLight,
+                indicatorColor = Color.Transparent,
+                selectedIconColor = inversePrimaryDark,
+                unselectedIconColor = Color.Black
             )
         )
     }

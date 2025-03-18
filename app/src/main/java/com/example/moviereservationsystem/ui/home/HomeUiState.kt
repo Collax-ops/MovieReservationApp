@@ -1,6 +1,13 @@
 package com.example.moviereservationsystem.ui.home
 
+import com.example.moviereservationsystem.ui.home.model.GenreUiModel
+import com.example.moviereservationsystem.ui.home.model.MovieUiModel
+
 data class HomeUiState (
     val isLoading: Boolean = false,
-    val movieList: List<MovieUiModel> = emptyList(),
+    val isError: Boolean = false,
+    val movies: List<MovieUiModel> = emptyList(),
+    val genres: List<GenreUiModel> = emptyList(),
+    val selectedGenre: Int = 0,
+    val filteredMovies: List<MovieUiModel> = emptyList()
 )
