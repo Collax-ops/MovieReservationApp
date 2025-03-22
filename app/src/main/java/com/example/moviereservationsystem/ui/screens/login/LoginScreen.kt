@@ -1,4 +1,4 @@
-package com.example.moviereservationsystem.ui.login
+package com.example.moviereservationsystem.ui.screens.login
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -33,12 +33,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.moviereservationsystem.R
-import com.example.moviereservationsystem.ui.theme.MovieReservationSystemTheme
-import com.example.moviereservationsystem.ui.theme.onPrimaryContainerLight
-import com.example.moviereservationsystem.ui.theme.outlineVariantLightMediumContrast
-import com.example.moviereservationsystem.ui.theme.primaryContainerLight
-import com.example.moviereservationsystem.ui.theme.primaryLight
-import com.example.moviereservationsystem.ui.theme.tertiaryLight
+import com.example.moviereservationsystem.ui.screens.theme.MovieReservationSystemTheme
+import com.example.moviereservationsystem.ui.screens.theme.onPrimaryContainerLight
+import com.example.moviereservationsystem.ui.screens.theme.outlineVariantLightMediumContrast
+import com.example.moviereservationsystem.ui.screens.theme.primaryContainerLight
+import com.example.moviereservationsystem.ui.screens.theme.primaryLight
+import com.example.moviereservationsystem.ui.screens.theme.tertiaryLight
 
 @Composable
 fun LoginScreen(loginViewModel: LoginViewModel){

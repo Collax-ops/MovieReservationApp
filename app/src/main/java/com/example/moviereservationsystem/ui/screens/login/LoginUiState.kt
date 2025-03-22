@@ -1,4 +1,4 @@
-package com.example.moviereservationsystem.ui.login
+package com.example.moviereservationsystem.ui.screens.login
 
 data class LoginUiState(
     val email: String = "",

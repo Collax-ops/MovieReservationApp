@@ -5,14 +5,20 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.moviereservationsystem.ui.home.HomeScreen
-import com.example.moviereservationsystem.ui.home.HomeViewModel
-import com.example.moviereservationsystem.ui.login.LoginScreen
-import com.example.moviereservationsystem.ui.login.LoginViewModel
-import com.example.moviereservationsystem.ui.signup.SignUpScreen
-import com.example.moviereservationsystem.ui.signup.SignUpViewModel
-import com.example.moviereservationsystem.ui.theme.MovieReservationSystemTheme
+import androidx.navigation.compose.rememberNavController
+import com.example.moviereservationsystem.ui.navigation.NavigationGraph
+import com.example.moviereservationsystem.ui.screens.home.HomeScreen
+import com.example.moviereservationsystem.ui.screens.home.HomeViewModel
+import com.example.moviereservationsystem.ui.screens.login.LoginScreen
+import com.example.moviereservationsystem.ui.screens.login.LoginViewModel
+import com.example.moviereservationsystem.ui.screens.signup.SignUpScreen
+import com.example.moviereservationsystem.ui.screens.signup.SignUpViewModel
+import com.example.moviereservationsystem.ui.screens.theme.MovieReservationSystemTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -24,7 +30,16 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-           HomeScreen(homeViewModel)
+
+            MovieReservationSystemTheme {
+                Surface (
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ){
+                    val navController = rememberNavController()
+                    NavigationGraph(navController)
+                }
+            }
         }
     }
 }

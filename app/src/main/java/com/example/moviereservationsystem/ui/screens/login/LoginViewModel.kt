@@ -1,4 +1,4 @@
-package com.example.moviereservationsystem.ui.login
+package com.example.moviereservationsystem.ui.screens.login
 
 import android.util.Log
 import android.util.Patterns

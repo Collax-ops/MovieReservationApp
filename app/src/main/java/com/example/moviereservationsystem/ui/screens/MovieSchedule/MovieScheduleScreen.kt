@@ -1,5 +1,9 @@
-package com.example.moviereservationsystem.ui.MovieSchedule
+package com.example.moviereservationsystem.ui.screens.MovieSchedule
 
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,9 +16,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.material3.AssistChip
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
@@ -31,13 +35,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.media3.common.util.Log
+import androidx.media3.common.util.UnstableApi
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import com.example.moviereservationsystem.R
-import com.example.moviereservationsystem.ui.theme.onSurfaceVariantLight
-import com.example.moviereservationsystem.ui.theme.tertiaryContainerLight
+import com.example.moviereservationsystem.ui.screens.theme.onSurfaceVariantLight
+import com.example.moviereservationsystem.ui.screens.theme.tertiaryContainerLight
 
 data class FakeDate(
     val month: String,
@@ -53,26 +64,62 @@ data class FakeTheather(
     val isSelected: Boolean = false
 )
 
-@Preview(showBackground = true)
+
+@androidx.annotation.OptIn(UnstableApi::class)
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun MovieScheduleScreen(){
+fun MovieScheduleScreen(
+    movieId: Int,
+    posterPath:String,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedContentScope,
+){
+
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ){
-        MovieSchedule(modifier = Modifier.align(Alignment.Center))
+        MovieSchedule(modifier = Modifier.align(Alignment.Center),sharedTransitionScope, animatedVisibilityScope,movieId,posterPath)
     }
 }
 
+@androidx.annotation.OptIn(UnstableApi::class)
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun MovieSchedule(modifier: Modifier){
+fun MovieSchedule(
+    modifier: Modifier,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedContentScope,
+    movieId: Int,
+    posterPath: String
+){
     Column(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
         TopBar()
         Spacer(modifier = Modifier.width(8.dp))
+        with(sharedTransitionScope) {
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data("https://image.tmdb.org/t/p/w500${posterPath}")
+                    .crossfade(true)
+                    .placeholderMemoryCacheKey("$movieId")
+                    .memoryCacheKey("$movieId")
+                    .build(),
+                contentDescription = "Movie Poster",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .size(300.dp, 440.dp)
+                    .sharedBounds(
+                        rememberSharedContentState(
+                            key = "$movieId"
+                        ),
+                        animatedVisibilityScope = animatedVisibilityScope
+                    )
+            )
+        }
         DateItem()
         Spacer(modifier = Modifier.width(4.dp))
         TheatherSchedule()
@@ -113,6 +160,7 @@ fun TopBar(){
         )
     }
 }
+
 
 
 @Preview(showBackground = true)

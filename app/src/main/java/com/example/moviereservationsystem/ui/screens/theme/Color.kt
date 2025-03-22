@@ -1,4 +1,4 @@
-package com.example.moviereservationsystem.ui.theme
+package com.example.moviereservationsystem.ui.screens.theme
 import androidx.compose.ui.graphics.Color
 
 val primaryLight = Color(0xFF4C662B)

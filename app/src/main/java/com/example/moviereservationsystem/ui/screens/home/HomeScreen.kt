@@ -1,7 +1,12 @@
-package com.example.moviereservationsystem.ui.home
+package com.example.moviereservationsystem.ui.screens.home
 
+import android.net.Uri
 import android.util.Log
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -47,31 +52,47 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.example.moviereservationsystem.R
-import com.example.moviereservationsystem.ui.home.model.GenreUiModel
-import com.example.moviereservationsystem.ui.home.model.MovieUiModel
-import com.example.moviereservationsystem.ui.theme.inversePrimaryDark
-import com.example.moviereservationsystem.ui.theme.onPrimaryContainerLight
-import com.example.moviereservationsystem.ui.theme.onPrimaryLight
-import com.example.moviereservationsystem.ui.theme.tertiaryContainerLight
+import com.example.moviereservationsystem.domain.model.Movie
+import com.example.moviereservationsystem.ui.navigation.AppDestination
+import com.example.moviereservationsystem.ui.screens.home.model.GenreUiModel
+import com.example.moviereservationsystem.ui.screens.home.model.MovieUiModel
+import com.example.moviereservationsystem.ui.screens.theme.inversePrimaryDark
+import com.example.moviereservationsystem.ui.screens.theme.onPrimaryContainerLight
+import com.example.moviereservationsystem.ui.screens.theme.onPrimaryLight
+import com.example.moviereservationsystem.ui.screens.theme.tertiaryContainerLight
 
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun HomeScreen(homeViewModel: HomeViewModel) {
+fun HomeScreen(
+    navController: NavController,
+    homeViewModel: HomeViewModel,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedContentScope,
+) {
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
-        Home(modifier = Modifier,homeViewModel)
+        Home(modifier = Modifier, homeViewModel,sharedTransitionScope,navController,animatedVisibilityScope)
     }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun Home(modifier: Modifier = Modifier, homeViewModel: HomeViewModel) {
+fun Home(
+    modifier: Modifier = Modifier,
+    homeViewModel: HomeViewModel,
+    sharedTransitionScope: SharedTransitionScope,
+    navController: NavController,
+    animatedVisibilityScope: AnimatedContentScope,
+) {
 
     val homeUiState by homeViewModel.uiState.collectAsState()
 
@@ -90,14 +111,17 @@ fun Home(modifier: Modifier = Modifier, homeViewModel: HomeViewModel) {
                 selectedGenre = homeUiState.selectedGenre,
                 onGenreSelected = { genreId ->
                     homeViewModel.updateSelectedGenre(genreId)
-                    homeViewModel.filterMoviesByGenre(genreId)
                 }
             )
             Spacer(modifier = Modifier.width(8.dp))
-            MovieGrid(
-                isLoading = homeUiState.isLoading,
-                movieList = homeUiState.filteredMovies
-            )
+            with(sharedTransitionScope) {
+                MovieGrid(
+                    isLoading = homeUiState.isLoading,
+                    movieList = homeUiState.filteredMovies,
+                    navController = navController,
+                    animatedVisibilityScope = animatedVisibilityScope
+                )
+            }
             Spacer(modifier = Modifier.width(8.dp))
         }
     }
@@ -168,8 +192,14 @@ fun GenresFilter(
 
 
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun MovieGrid(isLoading: Boolean, movieList: List<MovieUiModel>) {
+fun SharedTransitionScope.MovieGrid(
+    isLoading: Boolean,
+    movieList: List<MovieUiModel>,
+    navController: NavController,
+    animatedVisibilityScope: AnimatedContentScope
+) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         if (isLoading) {
             CircularProgressIndicator()
@@ -180,39 +210,72 @@ fun MovieGrid(isLoading: Boolean, movieList: List<MovieUiModel>) {
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                items(movieList, key = { it.title }) { movie ->
-                    MovieCard(movie)
+                items(movieList, key = { it.id }) { movie ->
+                        MovieCard(
+                            movieUiModel = movie,
+                            sharedTransitionScope = this@MovieGrid,
+                            animatedVisibilityScope = animatedVisibilityScope ,
+                            navController = navController
+                        )
                 }
             }
         }
     }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun MovieCard(movieUiModel: MovieUiModel) {
+fun MovieCard(
+    movieUiModel: MovieUiModel,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedContentScope,
+    navController: NavController
+) {
+
     Card(
-        colors = CardDefaults.cardColors(containerColor = onPrimaryLight)
+        colors = CardDefaults.cardColors(containerColor = onPrimaryLight),
+        modifier = Modifier.clickable {
+            navController.navigate(AppDestination.MovieSchedule.createRoute(movieUiModel.id,
+                Uri.encode(movieUiModel.posterPath)
+            )) {
+                popUpTo(AppDestination.Home.route) { inclusive = false }
+                launchSingleTop = true
+            }
+        }
     ) {
-        Column {
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data("https://image.tmdb.org/t/p/w500${movieUiModel.posterPath}")
-                    .crossfade(true)
-                    .build(),
-                contentDescription = "Movie Poster",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .size(150.dp, 220.dp)
-                    .clip(RoundedCornerShape(16.dp)),
-                onError = { Log.e("Coil", "Error loading image: ${it.result.throwable}") },
-                onSuccess = { Log.d("Coil", "Image loaded successfully") }
-            )
-            Text(
-                modifier = Modifier.padding(top = 4.dp, bottom = 8.dp),
-                text = movieUiModel.title,
-                style = MaterialTheme.typography.titleMedium,
-                textAlign = TextAlign.Center
-            )
+        with(sharedTransitionScope){
+            Column {
+                Log.d("MovieCard", "Navigating with movieId: ${movieUiModel.id}")
+
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data("https://image.tmdb.org/t/p/w500${movieUiModel.posterPath}")
+                        .crossfade(true)
+                        .placeholderMemoryCacheKey("${movieUiModel.id}")
+                        .memoryCacheKey("${movieUiModel.id}")
+                        .build(),
+                    placeholder = null,
+                    contentDescription = "Movie Poster",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(150.dp, 220.dp)
+                        .sharedBounds(
+                            rememberSharedContentState(
+                                key = "${movieUiModel.id}"
+                            ),
+                            animatedVisibilityScope = animatedVisibilityScope
+                        )
+                        .clip(RoundedCornerShape(16.dp)),
+                    onError = { Log.e("Coil", "Error loading image: ${it.result.throwable}") },
+                    onSuccess = { Log.d("Coil", "Image loaded successfully") }
+                )
+                Text(
+                    modifier = Modifier.padding(top = 4.dp, bottom = 8.dp),
+                    text = movieUiModel.title,
+                    style = MaterialTheme.typography.titleMedium,
+                    textAlign = TextAlign.Center
+                )
+            }
         }
     }
 }

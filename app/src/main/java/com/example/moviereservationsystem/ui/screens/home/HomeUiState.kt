@@ -1,7 +1,7 @@
-package com.example.moviereservationsystem.ui.home
+package com.example.moviereservationsystem.ui.screens.home
 
-import com.example.moviereservationsystem.ui.home.model.GenreUiModel
-import com.example.moviereservationsystem.ui.home.model.MovieUiModel
+import com.example.moviereservationsystem.ui.screens.home.model.GenreUiModel
+import com.example.moviereservationsystem.ui.screens.home.model.MovieUiModel
 
 data class HomeUiState (
     val isLoading: Boolean = false,
