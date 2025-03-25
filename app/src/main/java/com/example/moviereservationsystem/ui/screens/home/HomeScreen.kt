@@ -5,6 +5,10 @@ import android.util.Log
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -16,6 +20,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -52,12 +57,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.example.moviereservationsystem.R
-import com.example.moviereservationsystem.domain.model.Movie
 import com.example.moviereservationsystem.ui.navigation.AppDestination
 import com.example.moviereservationsystem.ui.screens.home.model.GenreUiModel
 import com.example.moviereservationsystem.ui.screens.home.model.MovieUiModel
@@ -233,10 +238,10 @@ fun MovieCard(
 ) {
 
     Card(
-        colors = CardDefaults.cardColors(containerColor = onPrimaryLight),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
         modifier = Modifier.clickable {
             navController.navigate(AppDestination.MovieSchedule.createRoute(movieUiModel.id,
-                Uri.encode(movieUiModel.posterPath)
+                Uri.encode(movieUiModel.posterPath),
             )) {
                 popUpTo(AppDestination.Home.route) { inclusive = false }
                 launchSingleTop = true
@@ -261,7 +266,7 @@ fun MovieCard(
                         .size(150.dp, 220.dp)
                         .sharedBounds(
                             rememberSharedContentState(
-                                key = "${movieUiModel.id}"
+                                key = "${movieUiModel.id}_image"
                             ),
                             animatedVisibilityScope = animatedVisibilityScope
                         )
@@ -270,9 +275,10 @@ fun MovieCard(
                     onSuccess = { Log.d("Coil", "Image loaded successfully") }
                 )
                 Text(
-                    modifier = Modifier.padding(top = 4.dp, bottom = 8.dp),
+                    modifier = Modifier
+                        .padding(top = 16.dp, bottom = 16.dp),
                     text = movieUiModel.title,
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.titleMedium.copy(fontSize = 20.sp),
                     textAlign = TextAlign.Center
                 )
             }
