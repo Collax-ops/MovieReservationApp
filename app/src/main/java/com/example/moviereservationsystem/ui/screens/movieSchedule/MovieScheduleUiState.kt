@@ -1,6 +1,6 @@
-package com.example.moviereservationsystem.ui.screens.MovieSchedule
+package com.example.moviereservationsystem.ui.screens.movieSchedule
 
-import com.example.moviereservationsystem.ui.screens.MovieSchedule.model.DatesUiModel
+import com.example.moviereservationsystem.ui.screens.movieSchedule.model.DatesUiModel
 
 data class MovieScheduleUiState (
     val isLoading: Boolean = false,
