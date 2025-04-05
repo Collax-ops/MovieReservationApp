@@ -15,6 +15,10 @@ import com.example.moviereservationsystem.ui.screens.movieSchedule.MovieSchedule
 import com.example.moviereservationsystem.ui.screens.movieSchedule.MovieScheduleViewModel
 import com.example.moviereservationsystem.ui.screens.home.HomeScreen
 import com.example.moviereservationsystem.ui.screens.home.HomeViewModel
+import com.example.moviereservationsystem.ui.screens.login.LoginScreen
+import com.example.moviereservationsystem.ui.screens.login.LoginViewModel
+import com.example.moviereservationsystem.ui.screens.signup.SignUpScreen
+import com.example.moviereservationsystem.ui.screens.signup.SignUpViewModel
 
 @androidx.annotation.OptIn(UnstableApi::class)
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -24,8 +28,20 @@ fun NavigationGraph(navController: NavHostController) {
         val sharedTransitionScope = this
         NavHost(
             navController = navController,
-            startDestination = AppDestination.Home.route
+            startDestination = AppDestination.Login.route
         ) {
+            composable(route = AppDestination.Login.route) {
+                val loginViewModel: LoginViewModel = hiltViewModel()
+
+                LoginScreen(loginViewModel)
+            }
+
+            composable (route = AppDestination.SignUp.route){
+                val signUpViewModel: SignUpViewModel = hiltViewModel()
+
+                SignUpScreen(signUpViewModel)
+            }
+
             composable(route = AppDestination.Home.route) {
                 val homeViewModel: HomeViewModel = hiltViewModel()
 

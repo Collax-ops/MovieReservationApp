@@ -1,8 +1,7 @@
 package com.example.moviereservationsystem.data.mapper
 
-import com.example.moviereservationsystem.data.model.MovieDto
+import com.example.moviereservationsystem.data.remote.model.MovieDto
 import com.example.moviereservationsystem.domain.model.Movie
-import dagger.Provides
 import javax.inject.Inject
 
 

@@ -2,6 +2,10 @@ package com.example.moviereservationsystem.ui.navigation
 
 sealed class AppDestination(val route: String) {
 
+    data object Login: AppDestination("login")
+
+    data object SignUp: AppDestination("signup")
+
     data object Home : AppDestination("home")
 
     data object MovieSchedule : AppDestination( "movieSchedule/{movieId}/{posterPath}"){

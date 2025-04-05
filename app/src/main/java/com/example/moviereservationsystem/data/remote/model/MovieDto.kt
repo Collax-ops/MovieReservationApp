@@ -1,6 +1,5 @@
-package com.example.moviereservationsystem.data.model
+package com.example.moviereservationsystem.data.remote.model
 
-import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonIgnoreUnknownKeys
@@ -10,7 +9,7 @@ import kotlinx.serialization.json.JsonIgnoreUnknownKeys
 @JsonIgnoreUnknownKeys
 data class MovieDto(
     val id: Int,
-    @SerialName("genre_ids") val genreIds: List<Int>,
-    val title: String,
+    @SerialName("genre_ids")
+    val genreIds: List<Int>, val title: String,
     @SerialName("poster_path") val posterPath: String?
 )

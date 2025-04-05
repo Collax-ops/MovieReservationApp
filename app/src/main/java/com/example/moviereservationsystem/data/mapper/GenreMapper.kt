@@ -1,6 +1,6 @@
 package com.example.moviereservationsystem.data.mapper
 
-import com.example.moviereservationsystem.data.model.GenreDto
+import com.example.moviereservationsystem.data.remote.model.GenreDto
 import com.example.moviereservationsystem.domain.model.Genre
 import javax.inject.Inject
 

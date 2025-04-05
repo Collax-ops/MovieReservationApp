@@ -13,6 +13,7 @@ class SingUpUseCase @Inject constructor(
 ){
     suspend operator fun invoke(name:String,email: String, password: String): Result<AuthResult> {
         val signUpResult = authRepository.signUpUser(email, password)
+
         if(signUpResult.isSuccess) {
             val firebaseUser = signUpResult.getOrNull()?.user
             if (firebaseUser != null) {
@@ -20,9 +21,13 @@ class SingUpUseCase @Inject constructor(
                     id = firebaseUser.uid,
                     name = name,
                     email = email,
-                    password = password
+
                 )
-                userRepository.saveUser(user)
+                val saveResult = runCatching { userRepository.saveUser(user) }
+
+                if (saveResult.isFailure) {
+                    return Result.failure(saveResult.exceptionOrNull() ?: Exception("Error al guardar usuario"))
+                }
             }
         }
         return signUpResult

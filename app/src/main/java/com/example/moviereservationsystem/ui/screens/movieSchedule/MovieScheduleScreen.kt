@@ -223,7 +223,9 @@ fun DateItem(
         onClick = onClick,
         label = {
             Text(
-                "${date.month}.\n${date.date}\n${date.dayOfWeek}",
+                "${date.month}.\n" +
+                        "${date.date}\n" +
+                        "${date.dayOfWeek}",
                 textAlign = TextAlign.Center
             )
         },
