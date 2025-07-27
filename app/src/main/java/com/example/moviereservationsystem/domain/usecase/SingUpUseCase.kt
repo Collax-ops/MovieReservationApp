@@ -21,7 +21,6 @@ class SingUpUseCase @Inject constructor(
                     id = firebaseUser.uid,
                     name = name,
                     email = email,
-
                 )
                 val saveResult = runCatching { userRepository.saveUser(user) }
 

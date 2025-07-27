@@ -17,6 +17,8 @@ import com.example.moviereservationsystem.ui.screens.home.HomeScreen
 import com.example.moviereservationsystem.ui.screens.home.HomeViewModel
 import com.example.moviereservationsystem.ui.screens.login.LoginScreen
 import com.example.moviereservationsystem.ui.screens.login.LoginViewModel
+import com.example.moviereservationsystem.ui.screens.seat.SeatScreen
+import com.example.moviereservationsystem.ui.screens.seat.SeatViewModel
 import com.example.moviereservationsystem.ui.screens.signup.SignUpScreen
 import com.example.moviereservationsystem.ui.screens.signup.SignUpViewModel
 
@@ -28,7 +30,7 @@ fun NavigationGraph(navController: NavHostController) {
         val sharedTransitionScope = this
         NavHost(
             navController = navController,
-            startDestination = AppDestination.Login.route
+            startDestination = AppDestination.Home.route
         ) {
             composable(route = AppDestination.Login.route) {
                 val loginViewModel: LoginViewModel = hiltViewModel()
@@ -67,7 +69,27 @@ fun NavigationGraph(navController: NavHostController) {
 
                 val posterPath = backStackEntry.arguments?.getString("posterPath").let { Uri.decode(it) } ?: return@composable
 
-                MovieScheduleScreen(movieScheduleViewModel,movieId,posterPath, sharedTransitionScope, this@composable)
+                MovieScheduleScreen(movieScheduleViewModel,movieId,posterPath, sharedTransitionScope, this@composable, navController)
+            }
+
+            composable (
+                route = AppDestination.Seat.route,
+                arguments = listOf(
+                    navArgument("movieId") { type = NavType.IntType },
+                    navArgument("theaterId") { type = NavType.IntType },
+                )
+            ) { backStackEntry ->
+
+                val movieId = backStackEntry.arguments?.getInt("movieId") ?: return@composable
+                val theaterId = backStackEntry.arguments?.getInt("theaterId") ?: return@composable
+
+                val seatViewModel: SeatViewModel = hiltViewModel()
+
+                SeatScreen(
+                    viewModel = seatViewModel,
+                    movieId = movieId,
+                    theaterId = theaterId
+                )
             }
         }
     }

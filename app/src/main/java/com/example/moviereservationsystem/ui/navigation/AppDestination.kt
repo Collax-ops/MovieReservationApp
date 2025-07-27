@@ -11,4 +11,9 @@ sealed class AppDestination(val route: String) {
     data object MovieSchedule : AppDestination( "movieSchedule/{movieId}/{posterPath}"){
         fun createRoute(movieId: Int, posterPath: String) = "movieSchedule/$movieId/$posterPath"
     }
+
+    data object Seat : AppDestination("seat/{movieId}/{theaterId}") {
+        fun createRoute(movieId: Int, theaterId: Int) =
+            "seat/$movieId/$theaterId"
+    }
 }

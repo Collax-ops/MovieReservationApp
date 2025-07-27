@@ -8,6 +8,7 @@ import androidx.room.PrimaryKey
 
 data class Seats(
     val seatId: String,
-    val theaterId: Int,
+    val row: Char,
+    val number: Int,
     val isAvailable: Boolean
 )

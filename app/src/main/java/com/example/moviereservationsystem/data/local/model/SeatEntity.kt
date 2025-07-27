@@ -4,14 +4,13 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import com.example.moviereservationsystem.domain.model.Theaters
 
 @Entity(
     tableName = "Seats",
     foreignKeys = [ForeignKey(
-        entity = Theaters::class,
+        entity = TheaterEntity::class,
         parentColumns = ["TheaterId"],
-        childColumns = ["TheaterId"],
+        childColumns = ["TheaterID"],
         onDelete = ForeignKey.CASCADE
     )]
 )
@@ -23,12 +22,24 @@ data class SeatEntity(
     @ColumnInfo(name = "TheaterID")
     val theaterId: Int,
 
+    @ColumnInfo(name = "Row")
+    val row: Char,
+
+    @ColumnInfo(name = "SeatNumber")
+    val seatNumber: Int,
+
     @ColumnInfo(name = "IsAvailable")
     val isAvailable: Boolean
 ) {
     companion object {
-        fun generateSeatId(row: Char, seatNumber: Int): String {
-            return "$row$seatNumber"
+        fun from(row: Char, seatNumber: Int, theaterId: Int, isAvailable: Boolean = true): SeatEntity {
+            return SeatEntity(
+                seatId = "$row$seatNumber-$theaterId",
+                row = row,
+                seatNumber = seatNumber,
+                theaterId = theaterId,
+                isAvailable = isAvailable
+            )
         }
     }
 }

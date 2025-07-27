@@ -1,5 +1,6 @@
 package com.example.moviereservationsystem.data.mapper
 
+import com.example.moviereservationsystem.data.local.model.MovieEntity
 import com.example.moviereservationsystem.data.remote.model.MovieDto
 import com.example.moviereservationsystem.domain.model.Movie
 import javax.inject.Inject
@@ -14,4 +15,13 @@ class MovieMapper @Inject constructor()  {
             posterPath = dto.posterPath
         )
     }
+
+   fun mapMoviesToEntities(movies: List<Movie>): List<MovieEntity> {
+        return movies.map { movie ->
+            MovieEntity(
+                id = movie.id,
+                title = movie.title
+            )
+        }
+   }
 }

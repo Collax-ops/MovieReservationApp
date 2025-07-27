@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,13 +18,19 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -34,9 +41,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,27 +48,23 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.util.UnstableApi
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.example.moviereservationsystem.R
+import com.example.moviereservationsystem.ui.navigation.AppDestination
 import com.example.moviereservationsystem.ui.screens.home.TopBar
 import com.example.moviereservationsystem.ui.screens.movieSchedule.model.DatesUiModel
-import com.example.moviereservationsystem.ui.screens.theme.onSurfaceVariantLight
+import com.example.moviereservationsystem.ui.screens.movieSchedule.model.MovieScheduleUiModel
+import com.example.moviereservationsystem.ui.screens.movieSchedule.model.TheatersUiModel
 import com.example.moviereservationsystem.ui.screens.theme.tertiaryContainerLight
-
-
-
-data class FakeTheather(
-    val name: String,
-    val schedules: List<String>,
-    val isSelected: Boolean = false
-)
-
 
 @androidx.annotation.OptIn(UnstableApi::class)
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -72,9 +72,10 @@ data class FakeTheather(
 fun MovieScheduleScreen(
     movieScheduleViewModel: MovieScheduleViewModel,
     movieId: Int,
-    posterPath:String,
+    posterPath: String,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedContentScope,
+    navController: NavHostController,
 ){
 
     Box(
@@ -83,16 +84,17 @@ fun MovieScheduleScreen(
             .background(MaterialTheme.colorScheme.background)
     ){
         MovieSchedule(
-            movieScheduleViewModel,
+            movieScheduleViewModel = movieScheduleViewModel,
             modifier = Modifier.align(Alignment.Center),
-            sharedTransitionScope,
-            animatedVisibilityScope,
-            movieId,
-            posterPath)
+            sharedTransitionScope = sharedTransitionScope,
+            animatedVisibilityScope = animatedVisibilityScope,
+            movieId = movieId,
+            posterPath = posterPath,
+            navController = navController
+        )
     }
 }
 
-@androidx.annotation.OptIn(UnstableApi::class)
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun MovieSchedule(
@@ -102,8 +104,8 @@ fun MovieSchedule(
     animatedVisibilityScope: AnimatedContentScope,
     movieId: Int,
     posterPath: String,
-){
-
+    navController: NavController
+) {
     val movieScheduleUiState by movieScheduleViewModel.uiState.collectAsState()
 
     Scaffold(
@@ -116,9 +118,16 @@ fun MovieSchedule(
         ) {
             Spacer(modifier = Modifier.width(8.dp))
             MovieCard(sharedTransitionScope, animatedVisibilityScope, movieId, posterPath)
-            DateList(movieScheduleUiState.dates,movieScheduleViewModel::updateSelectedDate)
+            DateList(movieScheduleUiState.dates, {movieScheduleViewModel.updateSelectedDate(it)})
             Spacer(modifier = Modifier.width(4.dp))
-            TheatherSchedule()
+            TheaterListWithDividers(
+                theaters = movieScheduleUiState.theaters,
+                movieScheduleUiState = movieScheduleUiState,
+                onTheaterSelected = { movieScheduleViewModel.updateSelectedTheater(it) },
+                onToggleExpandedState = { movieScheduleViewModel.toggleExpandedState(it) },
+                movieId = movieId,
+                navController = navController
+            )
         }
     }
 }
@@ -235,56 +244,97 @@ fun DateItem(
     )
 }
 
-@OptIn(ExperimentalLayoutApi::class)
-@Preview(showBackground = true)
+
 @Composable
-fun TheatherSchedule(){
-
-    var fakeTheaters by remember {
-        mutableStateOf(
-            listOf(
-                FakeTheather(
-                    "Theather Name",
-                    listOf("12:00", "15:00", "18:00", "21:00")
-                ),
-                FakeTheather(
-                    "Theather Name",
-                    listOf("12:00", "15:00", "18:00", "21:00")
-                ),
-                FakeTheather(
-                    "Theather Name",
-                    listOf("12:00", "15:00", "18:00", "21:00")
-                )
-
+fun TheaterListWithDividers(
+    theaters: List<TheatersUiModel>,
+    movieScheduleUiState: MovieScheduleUiState,
+    onTheaterSelected: (Int) -> Unit,
+    onToggleExpandedState: (Int) -> Unit,
+    movieId: Int,
+    navController: NavController
+) {
+    LazyColumn {
+        items(theaters) { theater ->
+            ExpandableTheaterItemCombined(
+                theater = theater,
+                onTheaterSelected = { onTheaterSelected(theater.theaterId) },
+                schedules = movieScheduleUiState.movieSchedules,
+                isExpanded = movieScheduleUiState.expandedState[theater.theaterId] ?: false,
+                onToggleExpandedState = { onToggleExpandedState(theater.theaterId) },
+                movieId = movieId,
+                navController = navController
             )
-        )
+            HorizontalDivider(thickness = 1.dp, color = Color.LightGray)
+        }
     }
+}
 
-    Column(modifier = Modifier.padding(16.dp)) {
-        fakeTheaters.forEach { theater ->
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun ExpandableTheaterItemCombined(
+    theater: TheatersUiModel,
+    onTheaterSelected: (Int) -> Unit,
+    schedules: List<MovieScheduleUiModel>,
+    isExpanded: Boolean,
+    onToggleExpandedState: (Int) -> Unit,
+    movieId: Int,
+    navController: NavController
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp, horizontal = 16.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable {
+                    onToggleExpandedState(theater.theaterId)
+                    onTheaterSelected(theater.theaterId)
+                }
+                .padding(vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
             Text(
-                text = theater.name,
-                style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.padding(bottom = 8.dp)
+                text = theater.theaterName,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
             )
+            Icon(
+                imageVector = if (isExpanded) Icons.Filled.KeyboardArrowUp else Icons.Filled.ArrowDropDown,
+                contentDescription = if (isExpanded) "Contraer ${theater.theaterName}" else "Expandir ${theater.theaterName}"
+            )
+        }
+
+        if (isExpanded) {
+            Spacer(modifier = Modifier.height(8.dp))
             FlowRow(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                theater.schedules.forEach { schedule ->
+                schedules.forEach { schedule ->
                     OutlinedButton(
-                        onClick = { },
-                        modifier = Modifier.padding(4.dp),
+                        onClick = {
+                            navController.navigate(
+                                AppDestination.Seat.createRoute(
+                                    movieId = movieId,
+                                    theaterId = theater.theaterId
+                                )
+                            )
+                        },
                         shape = MaterialTheme.shapes.medium
                     ) {
                         Text(
-                            text = schedule,
-                            color = onSurfaceVariantLight
+                            text = "${schedule.starTime} - ${schedule.endTime}",
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
             }
-            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }
