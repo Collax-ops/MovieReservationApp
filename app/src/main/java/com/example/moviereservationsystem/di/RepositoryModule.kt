@@ -58,4 +58,6 @@ abstract class RepositoryModule{
         seatRepositoryImpl: SeatRepositoryImpl
     ) : SeatRepository
 
+
+
 }

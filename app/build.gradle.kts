@@ -33,6 +33,9 @@ android {
         localProperties.load(project.rootProject.file("local.properties").inputStream())
         buildConfigField("String", "TMDB_API_KEY", "\"${localProperties.getProperty("TMDB_API_KEY")}\"")
         buildConfigField("String", "TMDB_API_BASE_URL", "\"${localProperties.getProperty("TMDB_API_BASE_URL")}\"")
+        buildConfigField("String", "PAYPAL_BASE_URL", "\"${localProperties.getProperty("PAYPAL_BASE_URL")}\"")
+        buildConfigField("String", "PAYPAL_CLIENT_ID", "\"${localProperties.getProperty("PAYPAL_CLIENT_ID")}\"")
+        buildConfigField("String", "PAYPAL_SECRET_KEY", "\"${localProperties.getProperty("PAYPAL_SECRET_KEY")}\"")
 
     }
 
@@ -109,6 +112,9 @@ dependencies {
     implementation(libs.coil.network.okhttp)
 
     //Paypal
+    implementation(libs.paypal.web.payments)
 
+    implementation(libs.androidx.datastore.preferences.core)
+    implementation(libs.androidx.datastore.preferences)
 }
 

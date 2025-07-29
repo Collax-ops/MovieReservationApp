@@ -1,4 +1,4 @@
-package com.example.moviereservationsystem.data.remote.model
+package com.example.moviereservationsystem.data.remote.model.tmdb
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

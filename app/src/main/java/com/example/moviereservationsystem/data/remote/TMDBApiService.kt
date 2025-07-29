@@ -1,7 +1,7 @@
 package com.example.moviereservationsystem.data.remote
 
-import com.example.moviereservationsystem.data.remote.model.GenreListResponse
-import com.example.moviereservationsystem.data.remote.model.MovieListResponse
+import com.example.moviereservationsystem.data.remote.model.tmdb.GenreListResponse
+import com.example.moviereservationsystem.data.remote.model.tmdb.MovieListResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
