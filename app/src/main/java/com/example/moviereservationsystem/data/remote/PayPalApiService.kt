@@ -1,13 +1,16 @@
 package com.example.moviereservationsystem.data.remote
 
-import com.example.moviereservationsystem.data.remote.model.paypal.request.AccessTokenResponseDto
+import com.example.moviereservationsystem.data.remote.model.paypal.response.AccessTokenResponseDto
 import com.example.moviereservationsystem.data.remote.model.paypal.response.CaptureOrderResponseDto
 import com.example.moviereservationsystem.data.remote.model.paypal.request.CreateOrderRequestDto
 import com.example.moviereservationsystem.data.remote.model.paypal.response.CreateOrderResponseDto
+import okhttp3.ResponseBody
+import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.Header
+import retrofit2.http.Headers
 import retrofit2.http.POST
 import retrofit2.http.Path
 
@@ -26,6 +29,7 @@ interface PayPalApiService {
     ): CreateOrderResponseDto
 
     @POST("v2/checkout/orders/{id}/capture")
+    @Headers("Content-Type: application/json")
     suspend fun captureOrder(
         @Header("Authorization") bearer: String,
         @Path("id") orderId: String

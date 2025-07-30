@@ -17,6 +17,8 @@ import com.example.moviereservationsystem.ui.screens.home.HomeScreen
 import com.example.moviereservationsystem.ui.screens.home.HomeViewModel
 import com.example.moviereservationsystem.ui.screens.login.LoginScreen
 import com.example.moviereservationsystem.ui.screens.login.LoginViewModel
+import com.example.moviereservationsystem.ui.screens.payment.PaymentScreen
+import com.example.moviereservationsystem.ui.screens.payment.PaymentViewModel
 import com.example.moviereservationsystem.ui.screens.seat.SeatScreen
 import com.example.moviereservationsystem.ui.screens.seat.SeatViewModel
 import com.example.moviereservationsystem.ui.screens.signup.SignUpScreen
@@ -88,8 +90,15 @@ fun NavigationGraph(navController: NavHostController) {
                 SeatScreen(
                     viewModel = seatViewModel,
                     movieId = movieId,
-                    theaterId = theaterId
+                    theaterId = theaterId,
+                    navController = navController
                 )
+            }
+
+            composable(route = AppDestination.Payment.route) {
+                val paymentViewModel: PaymentViewModel = hiltViewModel()
+
+                PaymentScreen(paymentViewModel, navController)
             }
         }
     }

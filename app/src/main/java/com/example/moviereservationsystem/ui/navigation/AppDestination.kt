@@ -16,4 +16,6 @@ sealed class AppDestination(val route: String) {
         fun createRoute(movieId: Int, theaterId: Int) =
             "seat/$movieId/$theaterId"
     }
+
+    data object Payment: AppDestination("payment")
 }

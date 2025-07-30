@@ -41,6 +41,9 @@ import androidx.compose.ui.unit.sp
 import com.example.moviereservationsystem.R
 import com.example.moviereservationsystem.ui.screens.seat.model.SeatUiState
 import androidx.compose.runtime.getValue
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import com.example.moviereservationsystem.ui.navigation.AppDestination
 import kotlin.compareTo
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -48,7 +51,8 @@ import kotlin.compareTo
 fun SeatScreen(
     viewModel: SeatViewModel,
     movieId: Int,
-    theaterId: Int
+    theaterId: Int,
+    navController: NavHostController
 ) {
     LaunchedEffect(Unit) {
         viewModel.loadSeats(theaterId)
@@ -61,7 +65,7 @@ fun SeatScreen(
             .background(MaterialTheme.colorScheme.background)
     )
     {
-        Seat(Modifier.align(Alignment.Center),viewModel)
+        Seat(Modifier.align(Alignment.Center),viewModel, navController)
 
     }
 }
@@ -69,7 +73,8 @@ fun SeatScreen(
 @Composable
 fun Seat(
     modifier: Modifier = Modifier,
-    seatViewModel: SeatViewModel
+    seatViewModel: SeatViewModel,
+    navController: NavHostController
 ) {
     val seatUiState by seatViewModel.uiState.collectAsState()
 
@@ -118,7 +123,9 @@ fun Seat(
             ProceedToPaymentButton(
                 selectedCount = seatUiState.selectedCount,
                 enabled = seatUiState.selectedCount > 0,
-                onClick = { seatViewModel.onProceed() },
+                onClick = {
+                    navController.navigate(AppDestination.Payment.route)
+                },
                 modifier = Modifier.fillMaxWidth()
             )
         }

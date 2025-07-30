@@ -1,5 +1,8 @@
 package com.example.moviereservationsystem.data.repository
 
+import androidx.annotation.OptIn
+import androidx.media3.common.util.Log
+import androidx.media3.common.util.UnstableApi
 import com.example.moviereservationsystem.BuildConfig
 import com.example.moviereservationsystem.data.local.datastore.TokenDataStore
 import com.example.moviereservationsystem.data.remote.PayPalApiService
@@ -38,6 +41,7 @@ class PayPalRepositoryImpl @Inject constructor(
         return response.accessToken
     }
 
+    @OptIn(UnstableApi::class)
     override suspend fun createOrder(amount: Double): String {
         val accessToken = this.getAccessToken()
         val bearer = "Bearer $accessToken"
@@ -64,8 +68,8 @@ class PayPalRepositoryImpl @Inject constructor(
         )
 
         val response = api.createOrder(bearer, request)
-        val approvalLink = response.links.firstOrNull { it.rel == "payer-action" }?.href.orEmpty()
-        return approvalLink
+        return response.id
+
     }
 
     override suspend fun captureOrder(orderId: String): String {
