@@ -114,6 +114,8 @@ dependencies {
     //Paypal
     implementation(libs.paypal.web.payments)
 
+
+    //datastore
     implementation(libs.androidx.datastore.preferences.core)
     implementation(libs.androidx.datastore.preferences)
 }

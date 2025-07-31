@@ -5,4 +5,5 @@ data class PaymentUiState(
     val isLoading: Boolean = false,
     val orderId: String? = null,
     val errorMessage: String? = null
+
 )

@@ -62,8 +62,6 @@ class PaymentActivity : ComponentActivity() {
         val uri = intent?.data
         val orderId = uri?.getQueryParameter("token") ?: return
 
-        Log.d("PaymentActivity", "✅ Returned orderId = $orderId")
-
         lifecycleScope.launch {
             try {
                 val result = capturePayPalOrderUseCase(orderId)
@@ -72,4 +70,5 @@ class PaymentActivity : ComponentActivity() {
             }
         }
     }
+
 }

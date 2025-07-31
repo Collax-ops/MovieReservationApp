@@ -1,7 +1,6 @@
 package com.example.moviereservationsystem.data.repository
 
 import androidx.annotation.OptIn
-import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
 import com.example.moviereservationsystem.BuildConfig
 import com.example.moviereservationsystem.data.local.datastore.TokenDataStore

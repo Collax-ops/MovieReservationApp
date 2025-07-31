@@ -18,6 +18,7 @@ activityCompose = "1.8.0"
 composeBom = "2024.04.01"
 lifecycleViewmodelCompose = "2.8.7"
 paypalWebPayments = "2.0.0"
+playServicesWallet = "19.4.0"
 retrofit = "2.9.0"
 retrofit2KotlinxSerializationConverter = "1.0.0"
 roomCompiler = "2.6.1"
@@ -60,6 +61,7 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 paypal-web-payments = { module = "com.paypal.android:paypal-web-payments", version.ref = "paypalWebPayments" }
+play-services-wallet = { module = "com.google.android.gms:play-services-wallet", version.ref = "playServicesWallet" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 retrofit2-kotlinx-serialization-converter = { module = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter", version.ref = "retrofit2KotlinxSerializationConverter" }
 androidx-media3-common-ktx = { group = "androidx.media3", name = "media3-common-ktx", version.ref = "media3CommonKtx" }

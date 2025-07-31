@@ -41,10 +41,8 @@ import androidx.compose.ui.unit.sp
 import com.example.moviereservationsystem.R
 import com.example.moviereservationsystem.ui.screens.seat.model.SeatUiState
 import androidx.compose.runtime.getValue
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.example.moviereservationsystem.ui.navigation.AppDestination
-import kotlin.compareTo
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -79,37 +77,33 @@ fun Seat(
     val seatUiState by seatViewModel.uiState.collectAsState()
 
     Scaffold(
-        topBar = { TopBar() }
+        topBar = { TopBar(onBack = { navController.popBackStack() }) }
     ) { paddingValues ->
         Column(
             modifier = modifier
                 .fillMaxSize()
-                .padding(paddingValues) // Padding from Scaffold
-                .padding(16.dp),       // Your overall content padding
-            // verticalArrangement = Arrangement.SpaceBetween // Pushes bottom elements down
+                .padding(paddingValues)
+                .padding(16.dp),
         ) {
-            // This Column will group the screen and grid, and we can center it or make it take available space
             Column(
                 modifier = Modifier
-                    .weight(1f) // This inner Column takes up available space before legend/button
+                    .weight(1f)
                     .fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally, // Center children horizontally
-                verticalArrangement = Arrangement.Center // Center children vertically in this Column
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
                 CinemaScreenCurve(
-                    modifier = Modifier.fillMaxWidth(), // Already fills width
+                    modifier = Modifier.fillMaxWidth(),
                     curveHeight = 50.dp,
                     curveColor = Color.DarkGray
                 )
 
-                Spacer(modifier = Modifier.height(16.dp)) // Space between curve and grid
-
-                // SeatGrid might not need a weight here if the parent Column handles distribution
+                Spacer(modifier = Modifier.height(16.dp))
                 SeatGrid(
                     seats = seatUiState.seats,
                     onSeatClick = { seatViewModel.onSeatClick(it) },
-                    modifier = Modifier.fillMaxWidth() // Ensure it fills width; vertical size is flexible
-                    // .weight(1f) // Add this back if SeatGrid needs to expand within this centered block
+                    modifier = Modifier.fillMaxWidth()
+
                 )
             }
 
@@ -117,7 +111,7 @@ fun Seat(
             SeatLegend(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 8.dp) // Add some spacing if needed
+                    .padding(vertical = 8.dp)
             )
 
             ProceedToPaymentButton(
@@ -132,10 +126,9 @@ fun Seat(
     }
 }
 
-@Preview(showBackground = true)
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
-fun TopBar(){
+fun TopBar(onBack: () -> Boolean) {
     Row (
         verticalAlignment = Alignment.CenterVertically,
     ){
@@ -240,7 +233,6 @@ fun SeatItem(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // Define color según estado
     val color = when {
         !uiState.isAvailable      -> Color.DarkGray
         uiState.isSelected        -> Color(0xFF4CAF50)

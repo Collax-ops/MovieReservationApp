@@ -1,4 +1,4 @@
-package com.example.moviereservationsystem.ui.utils
+package com.example.moviereservationsystem.utils
 
 import com.example.moviereservationsystem.ui.screens.movieSchedule.model.DatesUiModel
 import kotlinx.datetime.Clock
