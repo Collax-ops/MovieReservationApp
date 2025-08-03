@@ -20,6 +20,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -30,6 +31,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import com.example.moviereservationsystem.ui.navigation.AppDestination
 import com.example.moviereservationsystem.ui.screens.login.LogInButton
 import com.example.moviereservationsystem.ui.screens.theme.MovieReservationSystemTheme
 import com.example.moviereservationsystem.ui.screens.theme.onPrimaryContainerLight
@@ -39,16 +42,28 @@ import com.example.moviereservationsystem.ui.screens.theme.primaryLight
 import com.example.moviereservationsystem.ui.screens.theme.tertiaryLight
 
 @Composable
-fun SignUpScreen(signUpViewModel: SignUpViewModel){
+fun SignUpScreen(signUpViewModel: SignUpViewModel, navController: NavHostController) {
+    val signUpUiState by signUpViewModel.uiState.collectAsState()
+
+    LaunchedEffect(signUpUiState.navigateToLogin) {
+        if (signUpUiState.navigateToLogin) {
+            navController.navigate(AppDestination.Login.route) {
+                popUpTo(AppDestination.SignUp.route) { inclusive = true }
+            }
+            signUpViewModel.onNavigationHandled()
+        }
+    }
+
     Box(
         Modifier
             .fillMaxSize()
             .padding(16.dp)
             .background(MaterialTheme.colorScheme.background)
     ) {
-        SignUp(Modifier.align(Alignment.Center),signUpViewModel)
+        SignUp(Modifier.align(Alignment.Center), signUpViewModel)
     }
 }
+
 
 @Composable
 fun SignUp(modifier: Modifier,signUpViewModel: SignUpViewModel){

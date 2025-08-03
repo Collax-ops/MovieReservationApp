@@ -54,22 +54,22 @@ class SignUpViewModel @Inject constructor(private val signUpUseCase: SingUpUseCa
     private fun isValidEmail(email: String): Boolean = Patterns.EMAIL_ADDRESS.matcher(email).matches()
 
 
-    fun signUp(){
+    fun signUp() {
         if (!_uiState.value.isSignUpEnabled) return
-
 
         _uiState.update { it.copy(isLoading = true) }
 
         viewModelScope.launch {
             val result = signUpUseCase(_uiState.value.name, _uiState.value.email, _uiState.value.password)
-
             result.onSuccess {
-                Log.d("SignUp", "SignUp exitoso: ${it.user?.email}")
+                _uiState.update { it.copy(isLoading = false, navigateToLogin = true) }
             }.onFailure {
-                Log.e("SignUp", "Error en el SignUp", it)
+                _uiState.update { it.copy(isLoading = false) }
             }
         }
+    }
 
-
+    fun onNavigationHandled() {
+        _uiState.update { it.copy(navigateToLogin = false) }
     }
 }

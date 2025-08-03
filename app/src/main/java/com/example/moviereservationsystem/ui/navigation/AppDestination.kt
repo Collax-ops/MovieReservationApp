@@ -12,10 +12,21 @@ sealed class AppDestination(val route: String) {
         fun createRoute(movieId: Int, posterPath: String) = "movieSchedule/$movieId/$posterPath"
     }
 
-    data object Seat : AppDestination("seat/{movieId}/{theaterId}") {
-        fun createRoute(movieId: Int, theaterId: Int) =
-            "seat/$movieId/$theaterId"
+    data object Seat : AppDestination("seat/{theatherId}/{scheduleId}") {
+        fun createRoute(theatherId: Int,scheduleId: Int) = "seat/$theatherId/$scheduleId"
     }
 
-    data object Payment: AppDestination("payment")
+    data object Payment : AppDestination("payment/{scheduleId}/{theaterId}/{seats}") {
+        fun createRoute(scheduleId: Int, theaterId: Int, seats: String) =
+            "payment/$scheduleId/$theaterId/$seats"
+    }
+
+    data object DownloadTicket : AppDestination("downloadTicket/{ticketId}") {
+        fun createRoute(ticketId: Int) =
+            "downloadTicket/$ticketId"
+    }
+
+    data object BookingHistory : AppDestination("bookingHistory")
+
+    data object PaymentHistory : AppDestination("paymentHistory")
 }

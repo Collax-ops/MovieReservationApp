@@ -48,4 +48,16 @@ object RoomModule {
     @Provides
     fun provideSeatDao(db: AppDatabase) = db.seatDao()
 
+    @Singleton
+    @Provides
+    fun providePaymentDao(db: AppDatabase) = db.paymentDao()
+
+    @Singleton
+    @Provides
+    fun provideTicketDao(db: AppDatabase) = db.ticketDao()
+
+    @Singleton
+    @Provides
+    fun provideTicketSeatDao(db: AppDatabase) = db.ticketSeatDao()
+
 }

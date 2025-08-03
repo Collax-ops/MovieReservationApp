@@ -1,4 +1,4 @@
-package com.example.moviereservationsystem.data.remote.model.paypal.response
+package com.example.moviereservationsystem.data.remote.model.paypal.response.createorder
 
 
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -16,6 +16,6 @@ data class CreateOrderResponseDto(
     @SerialName("payment_source")
     val paymentSource: PaymentSourceResponseDto? = null,
     @SerialName("purchase_units")
-    val purchaseUnits: List<PurchaseUnitResponseDto>? = null, // <- opcional
+    val purchaseUnits: List<PurchaseUnitResponseDto>? = null,
     val links: List<LinkDto>
 )

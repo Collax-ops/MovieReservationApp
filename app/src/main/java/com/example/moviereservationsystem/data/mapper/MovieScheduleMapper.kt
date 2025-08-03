@@ -5,6 +5,7 @@ import com.example.moviereservationsystem.domain.model.MovieSchedule
 
 fun MovieScheduleEntity.toDomain(): MovieSchedule {
     return MovieSchedule(
+        scheduleId = this.scheduleId,
         theaterId = this.theaterId,
         movieId = this.movieId,
         startTime = this.startTime,

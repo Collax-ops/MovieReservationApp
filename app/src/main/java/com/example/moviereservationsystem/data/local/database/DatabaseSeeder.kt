@@ -109,6 +109,4 @@ class DatabaseSeeder @Inject constructor(
         }
         return seats
     }
-
-
 }

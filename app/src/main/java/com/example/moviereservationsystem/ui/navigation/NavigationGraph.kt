@@ -11,6 +11,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.example.moviereservationsystem.ui.screens.downloadTicket.DownloadTicketScreen
 import com.example.moviereservationsystem.ui.screens.movieSchedule.MovieScheduleScreen
 import com.example.moviereservationsystem.ui.screens.movieSchedule.MovieScheduleViewModel
 import com.example.moviereservationsystem.ui.screens.home.HomeScreen
@@ -32,18 +33,18 @@ fun NavigationGraph(navController: NavHostController) {
         val sharedTransitionScope = this
         NavHost(
             navController = navController,
-            startDestination = AppDestination.Home.route
+            startDestination = AppDestination.Login.route
         ) {
             composable(route = AppDestination.Login.route) {
                 val loginViewModel: LoginViewModel = hiltViewModel()
 
-                LoginScreen(loginViewModel)
+                LoginScreen(loginViewModel,navController)
             }
 
             composable (route = AppDestination.SignUp.route){
                 val signUpViewModel: SignUpViewModel = hiltViewModel()
 
-                SignUpScreen(signUpViewModel)
+                SignUpScreen(signUpViewModel,navController)
             }
 
             composable(route = AppDestination.Home.route) {
@@ -76,30 +77,52 @@ fun NavigationGraph(navController: NavHostController) {
 
             composable (
                 route = AppDestination.Seat.route,
-                arguments = listOf(
-                    navArgument("movieId") { type = NavType.IntType },
-                    navArgument("theaterId") { type = NavType.IntType },
-                )
+                arguments = listOf(navArgument("scheduleId") { type = NavType.IntType
+                }, navArgument("theatherId") { type = NavType.IntType })
             ) { backStackEntry ->
 
-                val movieId = backStackEntry.arguments?.getInt("movieId") ?: return@composable
-                val theaterId = backStackEntry.arguments?.getInt("theaterId") ?: return@composable
-
+                val scheduleId = backStackEntry.arguments?.getInt("scheduleId") ?: return@composable
+                val theatherId = backStackEntry.arguments?.getInt("theatherId") ?: return@composable
                 val seatViewModel: SeatViewModel = hiltViewModel()
 
                 SeatScreen(
                     viewModel = seatViewModel,
-                    movieId = movieId,
-                    theaterId = theaterId,
+                    theatherId = theatherId,
+                    scheduleId = scheduleId,
                     navController = navController
                 )
             }
 
-            composable(route = AppDestination.Payment.route) {
+            composable(
+                route = AppDestination.Payment.route,
+                arguments = listOf(
+                    navArgument("scheduleId") { type = NavType.IntType },
+                    navArgument("theaterId") { type = NavType.IntType },
+                    navArgument("seats") { type = NavType.StringType }
+                )
+            ) {
                 val paymentViewModel: PaymentViewModel = hiltViewModel()
+                val scheduleId = it.arguments?.getInt("scheduleId") ?: return@composable
+                val theaterId = it.arguments?.getInt("theaterId") ?: return@composable
+                val seats = it.arguments?.getString("seats")?.split(",") ?: emptyList()
 
-                PaymentScreen(paymentViewModel, navController)
+                PaymentScreen(
+                    viewModel = paymentViewModel,
+                    navController = navController,
+                    scheduleId = scheduleId,
+                    theaterId = theaterId,
+                    selectedSeats = seats
+                )
             }
+
+            composable(
+                route = "download_ticket/{ticketId}",
+                arguments = listOf(navArgument("ticketId") { type = NavType.IntType })
+            ) {
+                val ticketId = it.arguments?.getInt("ticketId") ?: -1
+                DownloadTicketScreen()
+            }
+
         }
     }
 }

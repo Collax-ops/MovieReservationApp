@@ -64,6 +64,7 @@ class MovieScheduleViewModel @Inject constructor(
                 _uiState.value = _uiState.value.copy(
                     movieSchedules = schedules.map { schedule ->
                         MovieScheduleUiModel(
+                            scheduleId = schedule.scheduleId,
                             starTime = schedule.startTime,
                             endTime = schedule.endTime
                         )

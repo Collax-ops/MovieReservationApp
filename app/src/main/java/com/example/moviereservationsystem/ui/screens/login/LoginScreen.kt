@@ -2,6 +2,7 @@ package com.example.moviereservationsystem.ui.screens.login
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,6 +20,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -32,7 +34,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.example.moviereservationsystem.R
+import com.example.moviereservationsystem.ui.navigation.AppDestination
 import com.example.moviereservationsystem.ui.screens.theme.MovieReservationSystemTheme
 import com.example.moviereservationsystem.ui.screens.theme.onPrimaryContainerLight
 import com.example.moviereservationsystem.ui.screens.theme.outlineVariantLightMediumContrast
@@ -41,22 +46,30 @@ import com.example.moviereservationsystem.ui.screens.theme.primaryLight
 import com.example.moviereservationsystem.ui.screens.theme.tertiaryLight
 
 @Composable
-fun LoginScreen(loginViewModel: LoginViewModel){
+fun LoginScreen(loginViewModel: LoginViewModel, navController: NavHostController) {
+    val loginUiState by loginViewModel.uiState.collectAsState()
+
+    LaunchedEffect(loginUiState.navigateToHome) {
+        if (loginUiState.navigateToHome) {
+            navController.navigate(AppDestination.Home.route) {
+                popUpTo(AppDestination.Login.route) { inclusive = true }
+            }
+            loginViewModel.onNavigationHandled()
+        }
+    }
+
     Box(
         Modifier
             .fillMaxSize()
             .padding(16.dp)
             .background(MaterialTheme.colorScheme.background)
-    )
-    {
-        Login(Modifier.align(Alignment.Center),loginViewModel)
-
+    ) {
+        Login(Modifier.align(Alignment.Center), loginViewModel,navController)
     }
-
 }
 
 @Composable
-fun Login(modifier: Modifier,loginViewModel: LoginViewModel){
+fun Login(modifier: Modifier,loginViewModel: LoginViewModel,navController: NavController){
 
     val loginUiState by loginViewModel.uiState.collectAsState()
 
@@ -73,7 +86,9 @@ fun Login(modifier: Modifier,loginViewModel: LoginViewModel){
             onTextFieldChanged = { loginViewModel.updatePassword(it) }
         )
         Spacer(modifier = Modifier.padding(8.dp))
-        SignUpRedirection()
+        SignUpRedirection{
+            navController.navigate(AppDestination.SignUp.route)
+        }
         Spacer(modifier = Modifier.padding(16.dp))
         LogInButton(
             isEnabled = loginUiState.isLoginEnabled,
@@ -146,19 +161,17 @@ fun PasswordField(password: String, onTextFieldChanged: (String) -> Unit){
 }
 
 @Composable
-fun SignUpRedirection(){
+fun SignUpRedirection(onClick: () -> Unit) {
     Row(
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(
-            text = "Don't have any acount?",
-            style = MaterialTheme.typography.labelLarge
-        )
+        Text(text = "Don't have an account?", style = MaterialTheme.typography.labelLarge)
         Spacer(modifier = Modifier.padding(start = 4.dp))
         Text(
             text = "Register",
             style = MaterialTheme.typography.labelLarge,
-            color = tertiaryLight
+            color = tertiaryLight,
+            modifier = Modifier.clickable { onClick() }
         )
     }
 }

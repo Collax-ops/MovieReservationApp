@@ -4,10 +4,11 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
+import androidx.room.PrimaryKey
+import kotlinx.datetime.LocalDateTime
 
 @Entity(
     tableName = "movie_schedules",
-    primaryKeys = ["theaterId", "movieId"],
     foreignKeys = [
         ForeignKey(
             entity = TheaterEntity::class,
@@ -22,11 +23,18 @@ import androidx.room.Index
             onDelete = ForeignKey.CASCADE
         )
     ],
-    indices = [Index(value = ["theaterId"]), Index(value = ["movieId"])]
+    indices = [
+        Index("theaterId"),
+        Index("movieId")
+    ]
 )
 data class MovieScheduleEntity(
-    @ColumnInfo(name = "theaterId") val theaterId: Int,
-    @ColumnInfo(name = "movieId") val movieId: Int,
-    @ColumnInfo(name = "startTime") val startTime: String,
-    @ColumnInfo(name = "endTime") val endTime: String
+    @PrimaryKey(autoGenerate = true)
+    val scheduleId: Int = 0,
+
+    val theaterId: Int,
+    val movieId: Int,
+
+    val startTime: String,
+    val endTime: String
 )

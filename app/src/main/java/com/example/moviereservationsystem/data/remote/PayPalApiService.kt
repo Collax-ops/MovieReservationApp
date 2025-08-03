@@ -1,11 +1,9 @@
 package com.example.moviereservationsystem.data.remote
 
 import com.example.moviereservationsystem.data.remote.model.paypal.response.AccessTokenResponseDto
-import com.example.moviereservationsystem.data.remote.model.paypal.response.CaptureOrderResponseDto
+import com.example.moviereservationsystem.data.remote.model.paypal.response.captureorder.CaptureOrderResponseDto
 import com.example.moviereservationsystem.data.remote.model.paypal.request.CreateOrderRequestDto
-import com.example.moviereservationsystem.data.remote.model.paypal.response.CreateOrderResponseDto
-import okhttp3.ResponseBody
-import retrofit2.Response
+import com.example.moviereservationsystem.data.remote.model.paypal.response.createorder.CreateOrderResponseDto
 import retrofit2.http.Body
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded

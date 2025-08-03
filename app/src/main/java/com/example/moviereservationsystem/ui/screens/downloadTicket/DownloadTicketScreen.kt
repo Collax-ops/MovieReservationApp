@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DownloadTicketScreen(
+
     ticket: TicketUiModel = TicketUiModel(
         movieTitle = "Title Movie",
         userName = "John Doe",

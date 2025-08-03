@@ -321,8 +321,8 @@ fun ExpandableTheaterItemCombined(
                         onClick = {
                             navController.navigate(
                                 AppDestination.Seat.createRoute(
-                                    movieId = movieId,
-                                    theaterId = theater.theaterId
+                                    theatherId = theater.theaterId,
+                                    scheduleId = schedule.scheduleId
                                 )
                             )
                         },

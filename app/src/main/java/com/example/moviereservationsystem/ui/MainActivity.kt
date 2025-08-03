@@ -8,6 +8,7 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
@@ -24,23 +25,31 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    private val homeViewModel : HomeViewModel by viewModels()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         enableEdgeToEdge()
         setContent {
-
             MovieReservationSystemTheme {
-                Surface (
+                val navController = rememberNavController()
+
+
+                LaunchedEffect(Unit) {
+                    intent?.getStringExtra("navigateTo")?.let { route ->
+                        if (route == "download_ticket") {
+                            val ticketId = intent?.getIntExtra("ticketId", -1) ?: -1
+                            navController.navigate("download_ticket/$ticketId")
+                        }
+                    }
+                }
+
+                Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
-                ){
-                    val navController = rememberNavController()
-                    NavigationGraph(navController)
+                ) {
+                    NavigationGraph(navController = navController)
                 }
             }
         }
     }
 }
-

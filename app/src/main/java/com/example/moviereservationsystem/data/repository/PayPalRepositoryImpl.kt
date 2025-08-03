@@ -4,6 +4,7 @@ import androidx.annotation.OptIn
 import androidx.media3.common.util.UnstableApi
 import com.example.moviereservationsystem.BuildConfig
 import com.example.moviereservationsystem.data.local.datastore.TokenDataStore
+import com.example.moviereservationsystem.data.mapper.toDomainModel
 import com.example.moviereservationsystem.data.remote.PayPalApiService
 import com.example.moviereservationsystem.data.remote.model.paypal.request.AmountDto
 import com.example.moviereservationsystem.data.remote.model.paypal.request.CreateOrderRequestDto
@@ -11,6 +12,7 @@ import com.example.moviereservationsystem.data.remote.model.paypal.request.Exper
 import com.example.moviereservationsystem.data.remote.model.paypal.request.PayPalDto
 import com.example.moviereservationsystem.data.remote.model.paypal.request.PaymentSourceDto
 import com.example.moviereservationsystem.data.remote.model.paypal.request.PurchaseUnitRequestDto
+import com.example.moviereservationsystem.domain.model.CapturedPayPalPayment
 import com.example.moviereservationsystem.domain.repository.PayPalRepository
 import javax.inject.Inject
 
@@ -71,11 +73,11 @@ class PayPalRepositoryImpl @Inject constructor(
 
     }
 
-    override suspend fun captureOrder(orderId: String): String {
+    override suspend fun captureOrder(orderId: String): CapturedPayPalPayment {
         val accessToken = getAccessToken()
         val bearer = "Bearer $accessToken"
 
         val response = api.captureOrder(bearer, orderId)
-        return response.status.toString()
+        return response.toDomainModel()
     }
 }

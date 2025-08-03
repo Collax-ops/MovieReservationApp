@@ -4,7 +4,9 @@ import android.util.Log
 import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.moviereservationsystem.data.local.datastore.SessionDataStore
 import com.example.moviereservationsystem.domain.usecase.LoginUseCase
+import com.google.firebase.auth.AuthResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,7 +17,12 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class LoginViewModel @Inject constructor(private val loginUseCase: LoginUseCase) : ViewModel(){
+class LoginViewModel @Inject constructor(
+    private val loginUseCase: LoginUseCase,
+    private val sessionDataStore: SessionDataStore
+) : ViewModel(){
+
+
 
     private val _uiState = MutableStateFlow(LoginUiState())
     val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
@@ -44,6 +51,7 @@ class LoginViewModel @Inject constructor(private val loginUseCase: LoginUseCase)
 
     private fun isValidEmail(email: String): Boolean = Patterns.EMAIL_ADDRESS.matcher(email).matches()
 
+
     fun login() {
         if (!_uiState.value.isLoginEnabled) return
 
@@ -51,15 +59,18 @@ class LoginViewModel @Inject constructor(private val loginUseCase: LoginUseCase)
 
         viewModelScope.launch {
             val result = loginUseCase(_uiState.value.email, _uiState.value.password)
-
             result.onSuccess {
-                Log.d("LoginViewModel", "Login exitoso: ${it.user?.email}")
+                val userId = it.user?.uid
+                if (userId != null) sessionDataStore.saveUserId(userId)
+                _uiState.update { it.copy(isLoading = false, navigateToHome = true) }
             }.onFailure {
-                Log.e("LoginViewModel", "Error en el login", it)
+                _uiState.update { it.copy(isLoading = false) }
             }
-
-            _uiState.update { it.copy(isLoading = false) }
         }
+    }
+
+    fun onNavigationHandled() {
+        _uiState.update { it.copy(navigateToHome = false) }
     }
 
 }

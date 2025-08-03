@@ -43,17 +43,21 @@ import com.example.moviereservationsystem.ui.screens.seat.model.SeatUiState
 import androidx.compose.runtime.getValue
 import androidx.navigation.NavHostController
 import com.example.moviereservationsystem.ui.navigation.AppDestination
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.LocalDateTime.Companion
+import kotlinx.datetime.toLocalDateTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SeatScreen(
     viewModel: SeatViewModel,
-    movieId: Int,
-    theaterId: Int,
-    navController: NavHostController
+    theatherId: Int,
+    scheduleId: Int,
+    navController: NavHostController,
 ) {
+
     LaunchedEffect(Unit) {
-        viewModel.loadSeats(theaterId)
+        viewModel.loadSeats(theatherId,scheduleId)
     }
 
     Box(
@@ -63,7 +67,7 @@ fun SeatScreen(
             .background(MaterialTheme.colorScheme.background)
     )
     {
-        Seat(Modifier.align(Alignment.Center),viewModel, navController)
+        Seat(Modifier.align(Alignment.Center),viewModel, navController,theatherId, scheduleId)
 
     }
 }
@@ -72,9 +76,13 @@ fun SeatScreen(
 fun Seat(
     modifier: Modifier = Modifier,
     seatViewModel: SeatViewModel,
-    navController: NavHostController
+    navController: NavHostController,
+    theatherId: Int,
+    scheduleId: Int,
 ) {
     val seatUiState by seatViewModel.uiState.collectAsState()
+
+
 
     Scaffold(
         topBar = { TopBar(onBack = { navController.popBackStack() }) }
@@ -107,7 +115,6 @@ fun Seat(
                 )
             }
 
-            // Elements at the bottom
             SeatLegend(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -118,7 +125,16 @@ fun Seat(
                 selectedCount = seatUiState.selectedCount,
                 enabled = seatUiState.selectedCount > 0,
                 onClick = {
-                    navController.navigate(AppDestination.Payment.route)
+                    val selectedSeats = seatUiState.seats.filter { it.isSelected }
+                        .joinToString(",") {it.seatId}
+
+                    navController.navigate(
+                        AppDestination.Payment.createRoute(
+                            scheduleId ,
+                            theatherId,
+                            selectedSeats
+                        )
+                    )
                 },
                 modifier = Modifier.fillMaxWidth()
             )

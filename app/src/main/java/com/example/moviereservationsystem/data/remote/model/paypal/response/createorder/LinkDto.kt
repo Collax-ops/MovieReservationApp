@@ -1,4 +1,4 @@
-package com.example.moviereservationsystem.data.remote.model.paypal.response
+package com.example.moviereservationsystem.data.remote.model.paypal.response.createorder
 
 import kotlinx.serialization.Serializable
 

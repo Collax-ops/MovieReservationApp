@@ -1,6 +1,7 @@
 package com.example.moviereservationsystem.data.repository
 
 import com.example.moviereservationsystem.data.local.dao.SeatDao
+import com.example.moviereservationsystem.data.local.model.SeatEntity
 import com.example.moviereservationsystem.data.mapper.toDomain
 import com.example.moviereservationsystem.domain.model.Seats
 import com.example.moviereservationsystem.domain.repository.SeatRepository
@@ -21,4 +22,5 @@ class SeatRepositoryImpl @Inject constructor(
         val entity = seatDao.getSeatById(seatId)
         seatDao.updateAvailability(seatId, !entity.isAvailable)
     }
+
 }

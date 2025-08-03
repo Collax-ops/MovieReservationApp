@@ -6,17 +6,20 @@ import androidx.activity.ComponentActivity
 import androidx.annotation.OptIn
 import com.paypal.android.corepayments.CoreConfig
 import com.paypal.android.corepayments.Environment
-import com.paypal.android.corepayments.PayPalSDKError
 import com.paypal.android.paypalwebpayments.PayPalWebCheckoutClient
 import dagger.hilt.android.AndroidEntryPoint
-import androidx.core.net.toUri
 import androidx.lifecycle.lifecycleScope
 import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
 import com.example.moviereservationsystem.BuildConfig
-import com.example.moviereservationsystem.domain.repository.PayPalRepository
+import com.example.moviereservationsystem.data.local.datastore.SessionDataStore
+import com.example.moviereservationsystem.domain.model.Payment
+import com.example.moviereservationsystem.domain.model.Ticket
+import com.example.moviereservationsystem.domain.model.TicketSeat
 import com.example.moviereservationsystem.domain.usecase.CapturePayPalOrderUseCase
-import com.paypal.android.paypalwebpayments.PayPalWebCheckoutFinishStartResult
+import com.example.moviereservationsystem.domain.usecase.InsertTicketSeatsUseCase
+import com.example.moviereservationsystem.domain.usecase.InsertTicketUseCase
+import com.example.moviereservationsystem.domain.usecase.SavePaymentUseCase
 import com.paypal.android.paypalwebpayments.PayPalWebCheckoutFundingSource
 import com.paypal.android.paypalwebpayments.PayPalWebCheckoutRequest
 import kotlinx.coroutines.launch
@@ -28,14 +31,38 @@ class PaymentActivity : ComponentActivity() {
     @Inject
     lateinit var capturePayPalOrderUseCase: CapturePayPalOrderUseCase
 
+    @Inject
+    lateinit var savePaymentUseCase: SavePaymentUseCase
+
+    @Inject
+    lateinit var insertTicketUseCase: InsertTicketUseCase
+
+    @Inject
+    lateinit var insertTicketSeatsUseCase: InsertTicketSeatsUseCase
+
+    @Inject
+    lateinit var sessionDataStore: SessionDataStore
+
     private var alreadyLaunched = false
+
+    // Guardar datos persistentes
+    private var method: String? = null
+    private var scheduleId: Int = -1
+    private var theaterId: Int = -1
+    private var seats: ArrayList<String> = arrayListOf()
 
     @OptIn(UnstableApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        method = intent?.getStringExtra("method")
+        scheduleId = intent?.getIntExtra("scheduleId", -1) ?: -1
+        theaterId = intent?.getIntExtra("theaterId", -1) ?: -1
+        seats = intent?.getStringArrayListExtra("seats") ?: arrayListOf()
+
         if (!alreadyLaunched) {
             alreadyLaunched = true
+
             val orderId = intent?.getStringExtra("order_id")
             if (orderId.isNullOrBlank()) {
                 finish()
@@ -46,7 +73,6 @@ class PaymentActivity : ComponentActivity() {
                 clientId = BuildConfig.PAYPAL_CLIENT_ID,
                 environment = Environment.SANDBOX
             )
-
             val client = PayPalWebCheckoutClient(this, config, "myapp")
 
             val request = PayPalWebCheckoutRequest(orderId, PayPalWebCheckoutFundingSource.PAYPAL)
@@ -64,11 +90,60 @@ class PaymentActivity : ComponentActivity() {
 
         lifecycleScope.launch {
             try {
-                val result = capturePayPalOrderUseCase(orderId)
+                val captureResult = capturePayPalOrderUseCase(orderId)
+
+                val userId = sessionDataStore.getUserId()
+
+                Log.d("PaymentActivity", "👤 userId = $userId")
+                Log.d("PaymentActivity", "🎬 scheduleId = $scheduleId")
+                Log.d("PaymentActivity", "🏢 theaterId = $theaterId")
+                Log.d("PaymentActivity", "💺 seats = $seats")
+
+                if (scheduleId == -1 || seats.isEmpty()) {
+                    Log.e("PaymentActivity", "❌ scheduleId inválido o sin asientos seleccionados.")
+                    finish()
+                    return@launch
+                }
+
+                val ticket = Ticket(
+                    ticketId = 0,
+                    userId = userId,
+                    scheduleId = scheduleId,
+                    totalPrice = captureResult.amount,
+                    purchaseDate = captureResult.transactionDate
+                )
+
+                val ticketId = insertTicketUseCase(ticket).toInt()
+                Log.d("PaymentActivity", "✅ Ticket registrado con ID: $ticketId")
+
+                val payment = Payment(
+                    ticketId = ticketId,
+                    amount = captureResult.amount,
+                    paymentMethod = method ?: "PAYPAL",
+                    paymentStatus = captureResult.status,
+                    transactionDate = captureResult.transactionDate
+                )
+                savePaymentUseCase(payment)
+                Log.d("PaymentActivity", "✅ Pago registrado")
+
+                val ticketSeats = seats.map { seatId ->
+                    TicketSeat(ticketId = ticketId, seatId = seatId)
+                }
+                insertTicketSeatsUseCase(ticketSeats)
+                Log.d("PaymentActivity", "✅ Asientos registrados")
+
+                // Redirigir a pantalla de descarga
+                val intent = Intent(this@PaymentActivity, MainActivity::class.java).apply {
+                    putExtra("navigateTo", "download_ticket")
+                    putExtra("ticketId", ticketId)
+                    flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                }
+                startActivity(intent)
+                finish()
+
             } catch (e: Exception) {
                 Log.e("PaymentActivity", "❌ Error capturing payment", e)
             }
         }
     }
-
 }

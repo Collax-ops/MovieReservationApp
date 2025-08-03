@@ -49,7 +49,10 @@ private const val TAG = "PaymentScreen"
 @Composable
 fun PaymentScreen(
     viewModel: PaymentViewModel,
-    navController: NavHostController
+    navController: NavHostController,
+    theaterId: Int,
+    scheduleId: Int,
+    selectedSeats: List<String>
 ) {
     Box(
         Modifier
@@ -58,7 +61,7 @@ fun PaymentScreen(
             .background(MaterialTheme.colorScheme.background)
     )
     {
-        Payment(Modifier.align(Alignment.Center),viewModel, navController)
+        Payment(Modifier.align(Alignment.Center),viewModel, navController,theaterId,scheduleId,selectedSeats)
 
     }
 }
@@ -67,7 +70,10 @@ fun PaymentScreen(
 fun Payment(
     modifier: Modifier,
     viewModel: PaymentViewModel,
-    navController: NavHostController
+    navController: NavHostController,
+    theaterId: Int,
+    scheduleId: Int,
+    selectedSeats: List<String>
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
@@ -99,6 +105,9 @@ fun Payment(
                 val intent = Intent(context, PaymentActivity::class.java).apply {
                     putExtra("method", method)
                     putExtra("order_id", orderId)
+                    putExtra("scheduleId", scheduleId)
+                    putExtra("theaterId", theaterId)
+                    putStringArrayListExtra("seats", ArrayList(selectedSeats))
                 }
                 context.startActivity(intent)
                 viewModel.clearOrderId()
