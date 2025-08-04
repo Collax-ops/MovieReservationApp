@@ -7,12 +7,16 @@ import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class FirebaseAuthService @Inject constructor(private val auth: FirebaseAuth){
-
+class FirebaseAuthService @Inject constructor
+    (private val auth: FirebaseAuth)
+{
     suspend fun logInUser(email: String, password: String) : Result<AuthResult> {
         return withContext(Dispatchers.IO) {
             try {
@@ -35,5 +39,15 @@ class FirebaseAuthService @Inject constructor(private val auth: FirebaseAuth){
         }
     }
 
+    fun observeAuth(): Flow<FirebaseUser?> = callbackFlow {
+        val listener = FirebaseAuth.AuthStateListener { firebase ->
+            trySend(firebase.currentUser)
+        }
+        auth.addAuthStateListener(listener)
+        awaitClose { auth.removeAuthStateListener(listener) }
+    }
 
+    suspend fun signOutUser() = withContext(Dispatchers.IO) {
+        auth.signOut()
+    }
 }
