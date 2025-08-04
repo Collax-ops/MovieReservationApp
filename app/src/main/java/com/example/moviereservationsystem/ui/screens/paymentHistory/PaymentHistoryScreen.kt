@@ -19,29 +19,26 @@ import androidx.compose.material3.SegmentedButtonDefaults.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.moviereservationsystem.R
-
-
+import androidx.compose.runtime.getValue
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PaymentHistoryScreen(
-    history: List<PaymentHistoryUiModel> = listOf(
-        PaymentHistoryUiModel("TXN123", "2025-07-30", 25.00, "Successful"),
-        PaymentHistoryUiModel("TXN124", "2025-07-28", 15.00, "Failed"),
-        PaymentHistoryUiModel("TXN125", "2025-07-25", 30.00, "Pending"),
-    )
+    viewModel: PaymentHistoryViewModel,
 ) {
+    val uiState by viewModel.uiState.collectAsState()
+
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Payment History") }
+                title = { Text("Payment History") },
             )
         }
     ) { padding ->
@@ -50,7 +47,7 @@ fun PaymentHistoryScreen(
                 .fillMaxSize()
                 .padding(padding)
         ) {
-            items(history) { item ->
+            items(uiState.history) { item ->
                 Row(
                     Modifier
                         .fillMaxWidth()
@@ -82,7 +79,3 @@ fun PaymentHistoryScreen(
         }
     }
 }
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewPaymentHistory() = PaymentHistoryScreen()

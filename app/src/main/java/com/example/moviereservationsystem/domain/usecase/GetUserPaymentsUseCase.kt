@@ -8,5 +8,5 @@ import javax.inject.Inject
 class GetUserPaymentsUseCase @Inject constructor(
     private val paymentRepository: PaymentRepository
 ) {
-    operator fun invoke(userId: Int): Flow<List<Payment>> = paymentRepository.getPaymentHistory(userId)
+    operator fun invoke(userId: String): Flow<List<Payment>> = paymentRepository.getPaymentHistory(userId)
 }

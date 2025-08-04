@@ -1,6 +1,5 @@
 package com.example.moviereservationsystem.domain.repository
 
-import com.example.moviereservationsystem.data.local.model.SeatEntity
 import com.example.moviereservationsystem.domain.model.Seats
 import kotlinx.coroutines.flow.Flow
 

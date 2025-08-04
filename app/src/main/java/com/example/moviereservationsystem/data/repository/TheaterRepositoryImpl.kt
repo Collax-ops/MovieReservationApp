@@ -1,7 +1,6 @@
 package com.example.moviereservationsystem.data.repository
 
 import com.example.moviereservationsystem.data.local.dao.TheaterDao
-import com.example.moviereservationsystem.data.local.model.MovieEntity
 import com.example.moviereservationsystem.data.mapper.toDomain
 import com.example.moviereservationsystem.domain.model.Theaters
 import com.example.moviereservationsystem.domain.repository.TheaterRepository

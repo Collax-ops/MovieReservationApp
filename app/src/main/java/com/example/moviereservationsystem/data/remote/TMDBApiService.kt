@@ -18,4 +18,6 @@ interface TMDBApiService {
     suspend fun getGenresOfMovieList(
         @Query("language") language: String = "en-US"
     ) : Response<GenreListResponse>
+
+
 }

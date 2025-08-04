@@ -1,4 +1,4 @@
-package com.example.moviereservationsystem.ui.screens.paymentHistory
+package com.example.moviereservationsystem.ui.screens.paymentHistory.model
 
 import com.example.moviereservationsystem.R
 

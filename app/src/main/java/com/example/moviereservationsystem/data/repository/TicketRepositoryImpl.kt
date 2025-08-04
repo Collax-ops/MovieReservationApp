@@ -3,7 +3,9 @@ package com.example.moviereservationsystem.data.repository
 import com.example.moviereservationsystem.data.local.dao.TicketDao
 import com.example.moviereservationsystem.data.mapper.toDomain
 import com.example.moviereservationsystem.data.mapper.toEntity
+import com.example.moviereservationsystem.domain.model.BookingHistory
 import com.example.moviereservationsystem.domain.model.Ticket
+import com.example.moviereservationsystem.domain.model.TicketDetail
 import com.example.moviereservationsystem.domain.repository.TicketRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -21,9 +23,17 @@ class TicketRepositoryImpl @Inject constructor(
         return ticketDao.getOccupiedSeats(scheduleId)
     }
 
-    override fun getUserTickets(userId: Int): Flow<List<Ticket>> {
-        return ticketDao.getUserTickets(userId).map { tickets ->
+    override fun getBookingHistory(userId: String): Flow<List<BookingHistory>> {
+        return ticketDao.getBookingHistory(userId).map { tickets ->
             tickets.map { it.toDomain() }
         }
+    }
+
+    override suspend fun getTicketDetails(
+        ticketId: Int,
+        userName: String
+    ): TicketDetail {
+        val projection = ticketDao.getTicketDetails(ticketId)
+        return projection.toDomain(userName)
     }
 }

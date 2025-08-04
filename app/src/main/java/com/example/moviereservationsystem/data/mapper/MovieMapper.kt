@@ -1,6 +1,6 @@
 package com.example.moviereservationsystem.data.mapper
 
-import com.example.moviereservationsystem.data.local.model.MovieEntity
+import com.example.moviereservationsystem.data.local.model.entities.MovieEntity
 import com.example.moviereservationsystem.data.remote.model.tmdb.MovieDto
 import com.example.moviereservationsystem.domain.model.Movie
 import javax.inject.Inject

@@ -7,5 +7,6 @@ data class BookingUiModel(
     val date: String,
     val ticketsCount: Int,
     val totalPrice: Double,
-    val posterRes: Int = R.drawable.movie_icon
+    val movieId: Int,
+    val posterRes: Int = R.drawable.movie_icon // ícono temporal por defecto
 )

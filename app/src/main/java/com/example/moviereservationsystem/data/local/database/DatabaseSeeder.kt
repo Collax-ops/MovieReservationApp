@@ -1,10 +1,10 @@
 package com.example.moviereservationsystem.data.local.database
 
 import android.annotation.SuppressLint
-import com.example.moviereservationsystem.data.local.model.MovieEntity
-import com.example.moviereservationsystem.data.local.model.MovieScheduleEntity
-import com.example.moviereservationsystem.data.local.model.SeatEntity
-import com.example.moviereservationsystem.data.local.model.TheaterEntity
+import com.example.moviereservationsystem.data.local.model.entities.MovieEntity
+import com.example.moviereservationsystem.data.local.model.entities.MovieScheduleEntity
+import com.example.moviereservationsystem.data.local.model.entities.SeatEntity
+import com.example.moviereservationsystem.data.local.model.entities.TheaterEntity
 import com.example.moviereservationsystem.data.repository.MovieRepositoryImpl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

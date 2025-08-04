@@ -1,6 +1,6 @@
 package com.example.moviereservationsystem.data.mapper
 
-import com.example.moviereservationsystem.data.local.model.SeatEntity
+import com.example.moviereservationsystem.data.local.model.entities.SeatEntity
 import com.example.moviereservationsystem.domain.model.Seats
 
 fun SeatEntity.toDomain(): Seats {

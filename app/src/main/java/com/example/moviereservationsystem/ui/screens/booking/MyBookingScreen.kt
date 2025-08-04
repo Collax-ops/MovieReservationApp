@@ -20,6 +20,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -27,53 +29,66 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyBookingScreen(
-    bookings: List<BookingUiModel> = listOf(
-        BookingUiModel("Title Movie 1", "2025-08-01", 2, 25.00),
-        BookingUiModel("Title Movie 2", "2025-08-05", 1, 12.50),
-        BookingUiModel("Title Movie 3", "2025-08-10", 4, 50.00),
-    )
+    viewModel: BookingHistoryViewModel
 ) {
+    val uiState by viewModel.uiState.collectAsState()
+    val bookings = uiState
+
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("My Booking") })
+            TopAppBar(title = { Text("My Bookings") })
         }
     ) { padding ->
         LazyColumn(
-            Modifier
+            modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
         ) {
             items(bookings) { item ->
                 Card(
-                    Modifier
+                    modifier = Modifier
                         .fillMaxWidth()
                         .padding(8.dp),
                     shape = RoundedCornerShape(8.dp),
                     elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
                 ) {
-                    Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Row(
+                        modifier = Modifier.padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
                         Image(
                             painter = painterResource(item.posterRes),
                             contentDescription = null,
                             modifier = Modifier.size(64.dp)
                         )
-                        Spacer(Modifier.width(12.dp))
+                        Spacer(modifier = Modifier.width(12.dp))
                         Column(modifier = Modifier.weight(1f)) {
-                            Text(item.movieTitle, style = MaterialTheme.typography.bodyLarge)
+                            Text(
+                                text = if (item.movieTitle.isNotBlank())
+                                    item.movieTitle
+                                else
+                                    "Movie ID: ${item.movieId}",
+                                style = MaterialTheme.typography.bodyLarge
+                            )
                             Text(item.date, style = MaterialTheme.typography.bodySmall)
-                            Text("Tickets: ${item.ticketsCount}", style = MaterialTheme.typography.bodyMedium)
+                            Text(
+                                "Tickets: ${item.ticketsCount}",
+                                style = MaterialTheme.typography.bodyMedium
+                            )
                         }
-                        Text("\$${item.totalPrice}", style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold))
+                        Text(
+                            text = "$${item.totalPrice}",
+                            style = MaterialTheme.typography.bodyLarge.copy(
+                                fontWeight = FontWeight.Bold
+                            )
+                        )
                     }
                 }
             }
         }
     }
 }
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewMyBooking() = MyBookingScreen()

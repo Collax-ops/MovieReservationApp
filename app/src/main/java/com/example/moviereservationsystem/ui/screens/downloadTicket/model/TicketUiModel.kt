@@ -1,4 +1,4 @@
-package com.example.moviereservationsystem.ui.screens.downloadTicket
+package com.example.moviereservationsystem.ui.screens.downloadTicket.model
 
 data class TicketUiModel(
     val movieTitle: String,
@@ -6,6 +6,5 @@ data class TicketUiModel(
     val date: String,
     val showTime: String,
     val seats: List<String>,
-    val ticketPrice: Double,
     val totalPrice: Double
 )

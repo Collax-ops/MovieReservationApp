@@ -16,7 +16,7 @@ class PaymentRepositoryImpl @Inject constructor(
         paymentDao.insert(payment.toEntity())
     }
 
-    override fun getPaymentHistory(userId: Int): Flow<List<Payment>> {
+    override fun getPaymentHistory(userId: String): Flow<List<Payment>> {
         return paymentDao.getPaymentHistory(userId).map { list -> list.map { it.toDomain() } }
     }
 

@@ -103,7 +103,7 @@ fun Home(
 
     Scaffold(
         topBar = { TopBar() },
-        bottomBar = { NavigationBar() }
+        bottomBar = { NavigationBar(navController) }
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -288,18 +288,18 @@ fun MovieCard(
 
 
 @Composable
-fun NavigationBar() {
+fun NavigationBar(navController: NavController) {
     var selectedIndex by remember { mutableStateOf(0) }
 
     BottomAppBar(containerColor = onPrimaryLight) {
         NavigationBarItem(
             selected = selectedIndex == 0,
-            onClick = { selectedIndex = 0 },
+            onClick = {
+                selectedIndex = 0
+                navController.navigate(AppDestination.Home.route)
+            },
             icon = {
-                Icon(
-                    painterResource(R.drawable.home_icon),
-                    contentDescription = "Home_Icon",
-                )
+                Icon(painterResource(R.drawable.home_icon), contentDescription = "Home_Icon")
             },
             colors = NavigationBarItemDefaults.colors(
                 indicatorColor = Color.Transparent,
@@ -310,12 +310,12 @@ fun NavigationBar() {
         Spacer(Modifier.width(8.dp))
         NavigationBarItem(
             selected = selectedIndex == 1,
-            onClick = { selectedIndex = 1 },
+            onClick = {
+                selectedIndex = 1
+                navController.navigate(AppDestination.BookingHistory.route)
+            },
             icon = {
-                Icon(
-                    painterResource(R.drawable.booking_icon),
-                    contentDescription = "Booking_Icon"
-                )
+                Icon(painterResource(R.drawable.booking_icon), contentDescription = "Booking_Icon")
             },
             colors = NavigationBarItemDefaults.colors(
                 indicatorColor = Color.Transparent,
@@ -326,12 +326,12 @@ fun NavigationBar() {
         Spacer(Modifier.width(8.dp))
         NavigationBarItem(
             selected = selectedIndex == 2,
-            onClick = { selectedIndex = 2 },
+            onClick = {
+                selectedIndex = 2
+                navController.navigate(AppDestination.PaymentHistory.route)
+            },
             icon = {
-                Icon(
-                    painterResource(R.drawable.history_icon),
-                    contentDescription = "History_Icon"
-                )
+                Icon(painterResource(R.drawable.history_icon), contentDescription = "History_Icon")
             },
             colors = NavigationBarItemDefaults.colors(
                 indicatorColor = Color.Transparent,

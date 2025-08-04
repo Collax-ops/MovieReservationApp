@@ -20,6 +20,7 @@ import com.example.moviereservationsystem.domain.usecase.CapturePayPalOrderUseCa
 import com.example.moviereservationsystem.domain.usecase.InsertTicketSeatsUseCase
 import com.example.moviereservationsystem.domain.usecase.InsertTicketUseCase
 import com.example.moviereservationsystem.domain.usecase.SavePaymentUseCase
+import com.example.moviereservationsystem.ui.navigation.AppDestination
 import com.paypal.android.paypalwebpayments.PayPalWebCheckoutFundingSource
 import com.paypal.android.paypalwebpayments.PayPalWebCheckoutRequest
 import kotlinx.coroutines.launch
@@ -132,13 +133,13 @@ class PaymentActivity : ComponentActivity() {
                 insertTicketSeatsUseCase(ticketSeats)
                 Log.d("PaymentActivity", "✅ Asientos registrados")
 
-                // Redirigir a pantalla de descarga
-                val intent = Intent(this@PaymentActivity, MainActivity::class.java).apply {
-                    putExtra("navigateTo", "download_ticket")
-                    putExtra("ticketId", ticketId)
-                    flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+
+                Intent(this@PaymentActivity, MainActivity::class.java).also {
+                    it.putExtra("navigateTo", "downloadTicket")
+                    it.putExtra("ticketId", ticketId)
+                    it.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                    startActivity(it)
                 }
-                startActivity(intent)
                 finish()
 
             } catch (e: Exception) {

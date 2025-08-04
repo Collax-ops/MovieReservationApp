@@ -11,14 +11,14 @@ import com.example.moviereservationsystem.data.local.dao.TheaterDao
 import com.example.moviereservationsystem.data.local.dao.TicketDao
 import com.example.moviereservationsystem.data.local.dao.TicketSeatDao
 import com.example.moviereservationsystem.data.local.dao.UserDao
-import com.example.moviereservationsystem.data.local.model.MovieEntity
-import com.example.moviereservationsystem.data.local.model.MovieScheduleEntity
-import com.example.moviereservationsystem.data.local.model.PaymentEntity
-import com.example.moviereservationsystem.data.local.model.SeatEntity
-import com.example.moviereservationsystem.data.local.model.TheaterEntity
-import com.example.moviereservationsystem.data.local.model.TicketEntity
-import com.example.moviereservationsystem.data.local.model.TicketSeatCrossRef
-import com.example.moviereservationsystem.data.local.model.UserEntity
+import com.example.moviereservationsystem.data.local.model.entities.MovieEntity
+import com.example.moviereservationsystem.data.local.model.entities.MovieScheduleEntity
+import com.example.moviereservationsystem.data.local.model.entities.PaymentEntity
+import com.example.moviereservationsystem.data.local.model.entities.SeatEntity
+import com.example.moviereservationsystem.data.local.model.entities.TheaterEntity
+import com.example.moviereservationsystem.data.local.model.entities.TicketEntity
+import com.example.moviereservationsystem.data.local.model.entities.TicketSeatCrossRef
+import com.example.moviereservationsystem.data.local.model.entities.UserEntity
 
 @Database(
     entities = [

@@ -1,11 +1,9 @@
-package com.example.moviereservationsystem.data.local.model
+package com.example.moviereservationsystem.data.local.model.entities
 
-import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import kotlinx.datetime.LocalDateTime
 
 @Entity(
     tableName = "movie_schedules",

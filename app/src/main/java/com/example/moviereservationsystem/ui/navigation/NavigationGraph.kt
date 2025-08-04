@@ -11,7 +11,10 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.example.moviereservationsystem.ui.screens.booking.BookingHistoryViewModel
+import com.example.moviereservationsystem.ui.screens.booking.MyBookingScreen
 import com.example.moviereservationsystem.ui.screens.downloadTicket.DownloadTicketScreen
+import com.example.moviereservationsystem.ui.screens.downloadTicket.DownloadTicketViewModel
 import com.example.moviereservationsystem.ui.screens.movieSchedule.MovieScheduleScreen
 import com.example.moviereservationsystem.ui.screens.movieSchedule.MovieScheduleViewModel
 import com.example.moviereservationsystem.ui.screens.home.HomeScreen
@@ -20,6 +23,8 @@ import com.example.moviereservationsystem.ui.screens.login.LoginScreen
 import com.example.moviereservationsystem.ui.screens.login.LoginViewModel
 import com.example.moviereservationsystem.ui.screens.payment.PaymentScreen
 import com.example.moviereservationsystem.ui.screens.payment.PaymentViewModel
+import com.example.moviereservationsystem.ui.screens.paymentHistory.PaymentHistoryScreen
+import com.example.moviereservationsystem.ui.screens.paymentHistory.PaymentHistoryViewModel
 import com.example.moviereservationsystem.ui.screens.seat.SeatScreen
 import com.example.moviereservationsystem.ui.screens.seat.SeatViewModel
 import com.example.moviereservationsystem.ui.screens.signup.SignUpScreen
@@ -56,6 +61,20 @@ fun NavigationGraph(navController: NavHostController) {
                     sharedTransitionScope,
                     this@composable,
                 )
+            }
+
+            composable (route = AppDestination.PaymentHistory.route){
+                val paymentHistoryViewModel: PaymentHistoryViewModel = hiltViewModel()
+
+                PaymentHistoryScreen(
+                    paymentHistoryViewModel
+                )
+            }
+
+            composable(route = AppDestination.BookingHistory.route) {
+                val bookingHistoryViewModel: BookingHistoryViewModel = hiltViewModel()
+
+                MyBookingScreen(bookingHistoryViewModel)
             }
 
             composable(
@@ -116,11 +135,17 @@ fun NavigationGraph(navController: NavHostController) {
             }
 
             composable(
-                route = "download_ticket/{ticketId}",
+                route = AppDestination.DownloadTicket.route,
                 arguments = listOf(navArgument("ticketId") { type = NavType.IntType })
-            ) {
-                val ticketId = it.arguments?.getInt("ticketId") ?: -1
-                DownloadTicketScreen()
+            ) { backStack ->
+                val ticketId = backStack.arguments?.getInt("ticketId") ?: -1
+                val vm = hiltViewModel<DownloadTicketViewModel>()
+                DownloadTicketScreen(
+                    ticketId = ticketId,
+                    onBack = { navController.popBackStack() },
+                    viewModel = vm,
+                    navController = navController
+                )
             }
 
         }
