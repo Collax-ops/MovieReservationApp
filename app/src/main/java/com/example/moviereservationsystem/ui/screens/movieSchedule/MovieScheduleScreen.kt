@@ -60,7 +60,6 @@ import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.example.moviereservationsystem.R
 import com.example.moviereservationsystem.ui.navigation.AppDestination
-import com.example.moviereservationsystem.ui.screens.home.TopBar
 import com.example.moviereservationsystem.ui.screens.movieSchedule.model.DatesUiModel
 import com.example.moviereservationsystem.ui.screens.movieSchedule.model.MovieScheduleUiModel
 import com.example.moviereservationsystem.ui.screens.movieSchedule.model.TheatersUiModel

@@ -29,4 +29,6 @@ sealed class AppDestination(val route: String) {
     data object BookingHistory : AppDestination("bookingHistory")
 
     data object PaymentHistory : AppDestination("paymentHistory")
+
+    data object About: AppDestination("about")
 }

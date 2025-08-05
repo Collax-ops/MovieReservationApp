@@ -5,53 +5,37 @@ import android.util.Log
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -66,10 +50,9 @@ import com.example.moviereservationsystem.R
 import com.example.moviereservationsystem.ui.navigation.AppDestination
 import com.example.moviereservationsystem.ui.screens.home.model.GenreUiModel
 import com.example.moviereservationsystem.ui.screens.home.model.MovieUiModel
-import com.example.moviereservationsystem.ui.screens.theme.inversePrimaryDark
-import com.example.moviereservationsystem.ui.screens.theme.onPrimaryContainerLight
-import com.example.moviereservationsystem.ui.screens.theme.onPrimaryLight
 import com.example.moviereservationsystem.ui.screens.theme.tertiaryContainerLight
+import com.example.moviereservationsystem.utils.NavigationBar
+import com.example.moviereservationsystem.utils.TopBarWithTMDB
 
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -102,7 +85,7 @@ fun Home(
     val homeUiState by homeViewModel.uiState.collectAsState()
 
     Scaffold(
-        topBar = { TopBar() },
+        topBar = { TopBarWithTMDB(title = "Home", onAboutClick = {navController.navigate(AppDestination.About.route)}) },
         bottomBar = { NavigationBar(navController) }
     ) { paddingValues ->
         Column(
@@ -132,33 +115,7 @@ fun Home(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun TopBar(){
-    Row (
-        verticalAlignment = Alignment.CenterVertically
-    ){
-        TopAppBar(
-            title ={ Text("Home") },
-            navigationIcon = {
-                IconButton(onClick = {}) {
-                    Icon(
-                        painterResource(R.drawable.menu_icon),
-                        contentDescription = "Menu_Icon"
-                    )
-                }
-            },
-            actions = {
-                IconButton(onClick = {}) {
-                    Icon(
-                        painterResource(R.drawable.user_icon),
-                        contentDescription = "User_Icon"
-                    )
-                }
-            }
-        )
-    }
-}
+
 
 @Composable
 fun GenresFilter(
@@ -287,58 +244,4 @@ fun MovieCard(
 }
 
 
-@Composable
-fun NavigationBar(navController: NavController) {
-    var selectedIndex by remember { mutableStateOf(0) }
-
-    BottomAppBar(containerColor = onPrimaryLight) {
-        NavigationBarItem(
-            selected = selectedIndex == 0,
-            onClick = {
-                selectedIndex = 0
-                navController.navigate(AppDestination.Home.route)
-            },
-            icon = {
-                Icon(painterResource(R.drawable.home_icon), contentDescription = "Home_Icon")
-            },
-            colors = NavigationBarItemDefaults.colors(
-                indicatorColor = Color.Transparent,
-                selectedIconColor = inversePrimaryDark,
-                unselectedIconColor = onPrimaryContainerLight
-            )
-        )
-        Spacer(Modifier.width(8.dp))
-        NavigationBarItem(
-            selected = selectedIndex == 1,
-            onClick = {
-                selectedIndex = 1
-                navController.navigate(AppDestination.BookingHistory.route)
-            },
-            icon = {
-                Icon(painterResource(R.drawable.booking_icon), contentDescription = "Booking_Icon")
-            },
-            colors = NavigationBarItemDefaults.colors(
-                indicatorColor = Color.Transparent,
-                selectedIconColor = inversePrimaryDark,
-                unselectedIconColor = Color.Black
-            )
-        )
-        Spacer(Modifier.width(8.dp))
-        NavigationBarItem(
-            selected = selectedIndex == 2,
-            onClick = {
-                selectedIndex = 2
-                navController.navigate(AppDestination.PaymentHistory.route)
-            },
-            icon = {
-                Icon(painterResource(R.drawable.history_icon), contentDescription = "History_Icon")
-            },
-            colors = NavigationBarItemDefaults.colors(
-                indicatorColor = Color.Transparent,
-                selectedIconColor = inversePrimaryDark,
-                unselectedIconColor = Color.Black
-            )
-        )
-    }
-}
 

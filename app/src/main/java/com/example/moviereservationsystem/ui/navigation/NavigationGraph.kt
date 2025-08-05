@@ -11,6 +11,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.example.moviereservationsystem.ui.screens.about.AboutScreen
 import com.example.moviereservationsystem.ui.screens.booking.BookingHistoryViewModel
 import com.example.moviereservationsystem.ui.screens.booking.MyBookingScreen
 import com.example.moviereservationsystem.ui.screens.downloadTicket.DownloadTicketScreen
@@ -67,14 +68,18 @@ fun NavigationGraph(navController: NavHostController) {
                 val paymentHistoryViewModel: PaymentHistoryViewModel = hiltViewModel()
 
                 PaymentHistoryScreen(
-                    paymentHistoryViewModel
+                    paymentHistoryViewModel,
+                    navController
                 )
             }
 
             composable(route = AppDestination.BookingHistory.route) {
                 val bookingHistoryViewModel: BookingHistoryViewModel = hiltViewModel()
 
-                MyBookingScreen(bookingHistoryViewModel)
+                MyBookingScreen(
+                    bookingHistoryViewModel,
+                    navController
+                )
             }
 
             composable(
@@ -146,6 +151,10 @@ fun NavigationGraph(navController: NavHostController) {
                     viewModel = vm,
                     navController = navController
                 )
+            }
+
+            composable(route = AppDestination.About.route) {
+                AboutScreen(navController)
             }
 
         }
