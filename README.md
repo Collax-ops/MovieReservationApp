@@ -146,3 +146,10 @@ Este proyecto está bajo la licencia [MIT](LICENSE).
 - Autenticación: Firebase Authentication.
 
 ---
+### 🧾 Terceras bibliotecas y licencias
+
+Este proyecto utiliza librerías de terceros con licencias compatibles:
+
+- `kotlinx-datetime` (Apache-2.0): https://github.com/Kotlin/kotlinx-datetime
+
+---
